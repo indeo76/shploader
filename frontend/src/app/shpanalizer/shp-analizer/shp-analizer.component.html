@@ -1,0 +1,70 @@
+<div class="row">
+  <div class="col-12">
+    <button class="btn btn-primary" (click)="analizuj()" [disabled]="isAnalizeRunning">Analizuj</button>
+  </div>
+</div>
+<div class="row">
+  <div class="d-flex flex-wrap gap-2">
+    <button *ngFor="let table of tableList"
+            class="btn btn-outline-info"
+            [class.active]="selectedTable === table"
+            (click)="filterByTable(table)">
+      {{ table }}
+    </button>
+    <button class="btn btn-outline-info" (click)="showAll()">Pokaż wszystkie</button>
+    <button class="btn btn-outline-info" (click)="showNoOldCode()">Pokaż bez starego kodu</button>
+  </div>
+  <div class="col-12">
+    <div class="spinner-wrapper">
+      <p-progressSpinner ariaLabel="loading" *ngIf="isAnalizeRunning" />
+    </div>
+
+
+
+    <p-table [value]="rowsFiltered" [tableStyle]="{ 'min-width': '50rem' }"
+             styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
+             [paginator]="true"
+             [rows]="10"
+             paginatorPosition="both"
+             [rowsPerPageOptions]="[5, 10, 20, 50]"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="fileName">Filename <p-sortIcon field="fileName"></p-sortIcon></th>
+          <th pSortableColumn="kodNowy">Kod nowy <p-sortIcon field="kodNowy"></p-sortIcon></th>
+          <th pSortableColumn="kodStary">Kod stary <p-sortIcon field="kodStary"></p-sortIcon></th>
+          <th>dkp_N</th>
+          <th>dkp_D</th>
+          <th>xcode_C</th>
+          <th>xcode_N</th>
+          <th>xcode_D</th>
+          <th>RodzajGeometrii</th>
+          <th>gname</th>
+          <th>gvalue</th>
+          <th pSortableColumn="kodGeoinfo.tabela">Tabela <p-sortIcon field="kodGeoinfo.tabela"></p-sortIcon></th>
+          <th pSortableColumn="count">Count <p-sortIcon field="count"></p-sortIcon></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-row>
+        <tr *ngIf="getTyped(row) as row">
+          <td>{{ row.fileName }}</td>
+          <td>{{ row.kodNowy }}</td>
+          <td>{{ row.kodStary }}</td>
+          <td>{{ row.dkp_N }}</td>
+          <td>{{ row.dkp_D }}</td>
+          <td>{{ row.xcode_C }}</td>
+          <td>{{ row.xcode_N }}</td>
+          <td>{{ row.xcode_D }}</td>
+          <td>{{ row.rodzajGeometrii }}</td>
+          <td>{{ row.gname }}</td>
+          <td>{{ row.gvalue }}</td>
+
+          <td>{{ row.kodGeoinfo?.tabela }}</td>
+          <td>{{ row.count }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+  </div>
+</div>
+

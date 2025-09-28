@@ -1,5 +1,7 @@
 package pl.wodnet.shploader.shpanalizer;
 
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,10 +10,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/shpanalizer")
 public class ShpAnalizerController {
     private final ShpAnalizerService service;
+    protected final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     public ShpAnalizerController(ShpAnalizerService service) {
         this.service = service;
@@ -27,6 +32,7 @@ public class ShpAnalizerController {
         List<ShpReportRow> rows = service.analizuj(filePath);
         List<String> globalProperties = service.extractGlobalProperties(rows);
         ShpReport shpReport = new ShpReport(globalProperties, rows);
+        LOGGER.info("Zakonczono");
         return shpReport;
     }
 

@@ -104,12 +104,15 @@ public class ShpAnalizerService {
             ShpReportRow row = new ShpReportRow();
             row.setFileName(fileName);
             row.setKodNowy(kodNowy);
+            row.setDKP_N((String) feature.getProperty("DKP_N").getValue());
             row.setDKP_D((String) feature.getProperty("DKP_D").getValue());
             row.setGNAME((String) feature.getProperty("GNAME").getValue());
             row.setGVALUE((String) feature.getProperty("GVALUE").getValue());
 
             row.setKodStary(kodMnemoniczny);
+            row.setXCODE_C((Integer) feature.getProperty("XCODE_C").getValue());
             row.setXCODE_D((String) feature.getProperty("XCODE_D").getValue());
+            row.setXCODE_N((String) feature.getProperty("XCODE_N").getValue());
             row.setRodzajGeometrii(geometryType.getName().toString());
 
             row.setProperties(getFeatureProperties(feature));

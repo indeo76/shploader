@@ -5,11 +5,12 @@ import { CommonModule } from '@angular/common';
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import {TableModule} from 'primeng/table';
 import {AbstractShpComponent} from '../../abstract/AbstractShpComponent';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-shp-analizer',
   standalone: true,
-  imports: [CommonModule, ProgressSpinnerModule, TableModule],
+  imports: [CommonModule, ProgressSpinnerModule, TableModule, FormsModule],
   templateUrl: './shp-analizer.component.html',
   styleUrl: './shp-analizer.component.css'
 })
@@ -19,6 +20,7 @@ export class ShpAnalizerComponent extends AbstractShpComponent<ShpReportRow>{
   isAnalizeRunning = false;
   tableList: string[] = [];
   selectedTable!: string;
+  kodNowy!: string;
 
   constructor(private service: ShpAnalizerService) {
     super();
@@ -60,6 +62,12 @@ export class ShpAnalizerComponent extends AbstractShpComponent<ShpReportRow>{
   showNoOldCode(): void {
     this.rowsFiltered = this.shpReport.rows.filter(row => {
       return !row.dkp_N;
+    });
+  }
+
+  findByKodNowy(): void {
+    this.rowsFiltered = this.shpReport.rows.filter(row => {
+      return row.kodNowy === this.kodNowy;
     });
   }
 

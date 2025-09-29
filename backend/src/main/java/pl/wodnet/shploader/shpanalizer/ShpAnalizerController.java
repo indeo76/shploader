@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.wodnet.shploader.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class ShpAnalizerController {
                 "2. wczytanie listy plików" +
                 "3. dla każdego pliku i obiektu odczytać kody i rodzaj geometrii" +
                 "4. zbudować statystykę";
-        String filePath = "D:\\rozne\\2025-wrzesnia\\SHAPEGESUT\\SHAPE GESUT";
+        String filePath = Constants.SHP_GESUT_DIRECTORY;
         List<ShpReportRow> rows = service.analizuj(filePath);
         List<String> globalProperties = service.extractGlobalProperties(rows);
         ShpReport shpReport = new ShpReport(globalProperties, rows);

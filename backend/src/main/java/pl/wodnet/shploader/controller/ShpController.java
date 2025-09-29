@@ -104,6 +104,9 @@ public class ShpController {
     public String importDirectory(@RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
         Charset charset = Charset.forName(kodowanie.getCharsetName());
         String filePath = Constants.SHP_GESUT_DIRECTORY; //todo nie obsługuje SWDE!
+        List<String> tablesList = shpService.prepareTableListForMode(ShpImportModeEnum.GESUT);
+        shpService.truncateTables(tablesList, getSchemaOfMode(ShpImportModeEnum.GESUT));
+        shpService.truncateTables(Arrays.asList(new String[]{"shp"}), "shp");
         List<String> fileNameList = shpService.shpListSorted(filePath); //fileNameListSorted( filePath, "shp");
         List<GeoinfoKodyDTO> geoinfoKodyDTOList = confService.importGeoinfoKody();
         for(String fileName : fileNameList){

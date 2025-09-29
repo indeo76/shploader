@@ -16,8 +16,9 @@ public abstract class SieciBase extends GesutBaseEntity{
     private String funkcja_n;
     private String material;
     //private String dzialka;
-    private Double srednic_ww;
-    private Double srednic_zw;
+    private Double srednic; //todo uwaga jaka jednostka!
+    private Double srednic_ww; //todo uwaga jaka jednostka!
+    private Double srednic_zw; //todo uwaga jaka jednostka!
     private Double dlugosc;
     private String izolacja;
     private String przebieg;
@@ -28,6 +29,7 @@ public abstract class SieciBase extends GesutBaseEntity{
         funkcja = shp.getFNP_N();
         funkcja_n = shp.getFNP_D();
         material = shp.getMAT_N();
+        srednic = shp.getSSN();
         srednic_ww = shp.getSSW();
         srednic_zw = shp.getSSZ();
         dlugosc = shp.getXLENGTH();

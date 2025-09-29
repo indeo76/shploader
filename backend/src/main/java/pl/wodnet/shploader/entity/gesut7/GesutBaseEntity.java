@@ -52,11 +52,11 @@ public abstract class GesutBaseEntity {
         adres = shp.getNPD();
         creation_date = shp.getXCREATION1();
         modification_date = shp.getXMODIFICA1();
-        g7 = shp.getXCODE_N();
+        g7 = shp.getTyp(); //shp.getXCODE_N(); //todo - tutaj bierze nowy kod!!!!
         status = shp.getXSTATUS();
         material = shp.getMAT_N();
         stan = shp.getSTP_N();
         dzialka = shp.getNDZ();
-        g7_opis = shp.getXCODE_D();
+        g7_opis = shp.getXCODE_D(); //todo - tutaj bierze nowy kod!!!!
     }
 }

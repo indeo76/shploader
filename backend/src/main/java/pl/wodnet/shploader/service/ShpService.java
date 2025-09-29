@@ -158,17 +158,19 @@ public class ShpService {
                     if(kodMnemoniczny==null){
                         kodMnemoniczny = Tools.getNameWithoutExtension(file.getName());
                     }
-                    String tableName = confService.findTargetTable(kodMnemoniczny, geoinfoKodyDTOList);
+                    String tableName = confService.findTargetTable(kodMnemoniczny, geoinfoKodyDTOList);// todo tu ma trafic chyba stary kod nie nowy
                     shpEntity.setTableName(tableName);
                     shpEntity.setGeom(geom);
 //                                shpEntity.setGeom(GeometryExtractor.extractGeometry(feature));
                     //shpEntity.setPropertyTypes(propertyTypes);
                     //shpEntity.setProperties(properties);
+                    em.persist(shpEntity);
                     if(shpEntity.getTableName() !=null){
                         processShpEntity(em, shpEntity);
-                        shpEntityList.add(shpEntity);
-                        iGeomObjects = iGeomObjects + 1;
+//                        LOGGER.info(String.format("Zapisano obiekt w tabeli %s, kod stary: %s, kod nowy: %s", shpEntity.getTableName(), shpEntity.getDKP_N(), shpEntity.getXCODE_N()));
                     }
+                    shpEntityList.add(shpEntity);
+                    iGeomObjects = iGeomObjects + 1;
                     if(i % Integer.parseInt(BATCH_SIZE) == 0){
                         synchronizeTransaction(em);
 //                            LOGGER.info("Czas if(i % " + i + " == 0) start: " + (System.currentTimeMillis() - startTime));
@@ -220,15 +222,28 @@ public class ShpService {
     }
 
     private String findKodMnemoniczny(ShpEntity shpEntity, Map<String, String> properties, Map<String, String> propertyTypes, List<Property> propertyList, String kodMnemoniczny) {
+        Property propNowyKod = propertyList.stream().filter(aaa -> aaa.getName().toString().equals("XCODE_N")).collect(Collectors.toList()).get(0);
+        Property propStaryKod = propertyList.stream().filter(aaa -> aaa.getName().toString().equals("DKP_N")).collect(Collectors.toList()).get(0);
+        if(propStaryKod.getValue() != null){
+            kodMnemoniczny = propStaryKod.getValue().toString();
+        } else if(propNowyKod.getValue() != null){
+            kodMnemoniczny = propNowyKod.getValue().toString() + "*";
+        }
+        shpEntity.setTyp(kodMnemoniczny);
+
         for(Property prop : propertyList){
             try{
                 String name = prop.getName().toString();
                 name = clearDiacriticalChars(name);
                 if(prop.getValue() != null){
-                    if(name.equals("XCODE_N")){
-                        kodMnemoniczny = prop.getValue().toString();
-                        shpEntity.setTyp(kodMnemoniczny);
-                    }
+//                    if(name.equals("DKP_N")){ // to jest kod stary
+//                        kodMnemoniczny = prop.getValue().toString();
+//                        shpEntity.setTyp(kodMnemoniczny);
+//                    }
+//                    if(name.equals("XCODE_N")){ // UWAGA! to jest kod nowy
+//                        kodMnemoniczny = prop.getValue().toString();
+//                        shpEntity.setTyp(kodMnemoniczny);
+//                    }
                     if(!name.equals("the_geom")){
                         PropertyType type = prop.getType();
                         String typeBinding = type.getBinding().getName();
@@ -291,7 +306,7 @@ public class ShpService {
     }
 
     private void processShpEntity(EntityManager em, ShpEntity shpEntity) {
-        em.persist(shpEntity);
+//        em.persist(shpEntity);
         if(shpEntity.getTableName().contains(Constants.WOD_ARMATURA)){
             WodArmaturaEntity wodArmatura = new WodArmaturaEntity(shpEntity);
             em.persist(wodArmatura);

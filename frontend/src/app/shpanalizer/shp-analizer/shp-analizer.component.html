@@ -20,7 +20,9 @@
     </div>
 
 
-
+  <div class="col-12">
+      <input [(ngModel)]="kodNowy" type="text"/> <button class="btn btn-primary" (click)="findByKodNowy()">Szukaj wg nowego kodu</button>
+  </div>
     <p-table [value]="rowsFiltered" [tableStyle]="{ 'min-width': '50rem' }"
              styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
              [paginator]="true"

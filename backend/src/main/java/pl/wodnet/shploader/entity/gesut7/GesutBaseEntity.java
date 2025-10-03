@@ -58,5 +58,13 @@ public abstract class GesutBaseEntity {
         stan = shp.getSTP_N();
         dzialka = shp.getNDZ();
         g7_opis = shp.getXCODE_D(); //todo - tutaj bierze nowy kod!!!!
+        this.assignGNAMEFields(shp);
+    }
+
+    /**
+     * Przypisuje odpowiednie wartości GNAME/GVALUE do docelowych pól
+     */
+    protected void assignGNAMEFields(ShpEntity shp) {
+
     }
 }

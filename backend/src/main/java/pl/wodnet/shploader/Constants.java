@@ -3,7 +3,7 @@ package pl.wodnet.shploader;
 public interface Constants {
 
     public static final String SHP_GESUT_DIRECTORY = "D:\\rozne\\2025-wrzesnia\\SHAPEGESUT\\SHAPE GESUT";
-    public static final String SHP_SWDE_DIRECTORY = "C:\\Modul-mapy\\shploader\\shp\\shp_swde\\";
+    public static final String SHP_SWDE_DIRECTORY = "D:\\rozne\\2025-wrzesnia\\2020_shp_swde";
 
     public static final String WOD_SIECI = "wod_sieci";
     public static final String WOD_ARMATURA = "wod_armatura";

@@ -1,7 +1,10 @@
 package pl.wodnet.shploader.enums;
 
 public enum GNAME {
-    RODZAJ_PRZEWODU("Rodzaj przewodu");
+    MATERIAl("Materiał"),
+    PRZEBIEG("Przebieg"),
+    RODZAJ_PRZEWODU("Rodzaj przewodu"),
+    SREDNICA_URZADZENIA("Średnica urządzenia");
 
     private final String label;
 

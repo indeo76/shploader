@@ -36,6 +36,7 @@ import pl.wodnet.shploader.entity.swde.ObrebEntity;
 import pl.wodnet.shploader.enums.FeatureError;
 import pl.wodnet.shploader.enums.ShpImportModeEnum;
 import pl.wodnet.shploader.repository.ShpRepository;
+import pl.wodnet.shploader.service.classification.IClassificationProvider;
 import pl.wodnet.shploader.tools.Tools;
 
 import javax.persistence.EntityManager;
@@ -64,6 +65,9 @@ public class ShpService {
 
     @Autowired
     ConfService confService;
+
+    @Autowired
+    IClassificationProvider classificationProvider;
 
     @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
     private String BATCH_SIZE;
@@ -154,6 +158,8 @@ public class ShpService {
 
                     String kodMnemoniczny = null;
                     ShpEntity shpEntity = new ShpEntity();
+                    shpEntity.setPlik(file.getName());
+                    shpEntity.setPlikModificationDate(file);
                     kodMnemoniczny = findKodMnemoniczny(shpEntity, properties, propertyTypes, propertyList, kodMnemoniczny);
                     if(kodMnemoniczny==null){
                         kodMnemoniczny = Tools.getNameWithoutExtension(file.getName());
@@ -161,6 +167,15 @@ public class ShpService {
                     String tableName = confService.findTargetTable(kodMnemoniczny, geoinfoKodyDTOList);// todo tu ma trafic chyba stary kod nie nowy
                     shpEntity.setTableName(tableName);
                     shpEntity.setGeom(geom);
+                    try{
+                        shpEntity.setRoot(classificationProvider.getRoot(shpEntity.getXCODE_N()));
+                        shpEntity.setGeomType(classificationProvider.getGeomType(shpEntity.getXCODE_N()));
+                        shpEntity.setBranza(classificationProvider.getBranza(shpEntity.getXCODE_N()));
+                        shpEntity.setObiektType(classificationProvider.getObiektType(shpEntity.getXCODE_N()));
+                    } catch (Exception ex){
+
+                    }
+
 //                                shpEntity.setGeom(GeometryExtractor.extractGeometry(feature));
                     //shpEntity.setPropertyTypes(propertyTypes);
                     //shpEntity.setProperties(properties);
@@ -174,7 +189,7 @@ public class ShpService {
                     if(i % Integer.parseInt(BATCH_SIZE) == 0){
                         synchronizeTransaction(em);
 //                            LOGGER.info("Czas if(i % " + i + " == 0) start: " + (System.currentTimeMillis() - startTime));
-                        LOGGER.info(String.format("Saved: %s (%s): %s features / geoms: %s", tableName, kodMnemoniczny, i, iGeomObjects));
+                        LOGGER.info(String.format("Saved: %s %s (kod nowy: %s), (kod stary: %s), (kod uzyty: %s): %s features / geoms: %s", file.getName(), tableName, shpEntity.getXCODE_N(), shpEntity.getDKP_N(), kodMnemoniczny, i, iGeomObjects));
 //                            LOGGER.info("Czas if(i % " + i + " == 0) end: " + (System.currentTimeMillis() - startTime));
                     }
                 }
@@ -222,13 +237,24 @@ public class ShpService {
     }
 
     private String findKodMnemoniczny(ShpEntity shpEntity, Map<String, String> properties, Map<String, String> propertyTypes, List<Property> propertyList, String kodMnemoniczny) {
-        Property propNowyKod = propertyList.stream().filter(aaa -> aaa.getName().toString().equals("XCODE_N")).collect(Collectors.toList()).get(0);
-        Property propStaryKod = propertyList.stream().filter(aaa -> aaa.getName().toString().equals("DKP_N")).collect(Collectors.toList()).get(0);
-        if(propStaryKod.getValue() != null){
-            kodMnemoniczny = propStaryKod.getValue().toString();
-        } else if(propNowyKod.getValue() != null){
-            kodMnemoniczny = propNowyKod.getValue().toString() + "*";
+        Property propNowyKod;
+        Property propStaryKod;
+        try{
+            propNowyKod = propertyList.stream().filter(aaa -> aaa.getName().toString().equals("XCODE_N")).collect(Collectors.toList()).get(0);
+            propStaryKod = propertyList.stream().filter(aaa -> aaa.getName().toString().equals("DKP_N")).collect(Collectors.toList()).get(0);
+            if(propStaryKod.getValue() != null){
+                kodMnemoniczny = propStaryKod.getValue().toString();
+            } else if(propNowyKod.getValue() != null){
+                kodMnemoniczny = propNowyKod.getValue().toString() + "*";
+            }
+        } catch (Exception ex) {
+
         }
+
+        if(kodMnemoniczny==null){
+            kodMnemoniczny = Tools.getNameWithoutExtension(shpEntity.getPlik());
+        }
+
         shpEntity.setTyp(kodMnemoniczny);
 
         for(Property prop : propertyList){

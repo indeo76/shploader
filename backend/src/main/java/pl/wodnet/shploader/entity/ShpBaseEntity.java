@@ -2,9 +2,16 @@ package pl.wodnet.shploader.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import pl.wodnet.shploader.enums.GNAME;
 
 import javax.persistence.*;
+import java.io.File;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -13,6 +20,10 @@ public class ShpBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long gid;
+    private String plik;
+
+    @Column(name = "plik_modification_date")
+    private String plikModificationDate;
 
     private java.lang.String BLP_D;
     private java.lang.String BLP_N;
@@ -64,9 +75,9 @@ public class ShpBaseEntity {
     private java.lang.Double RZD;
     private java.lang.Double RZG;
     private java.lang.Double SRU; //kolizja typu Double/Integer
-    private java.lang.Double SSN;
-    private java.lang.Double SSW;
-    private java.lang.Double SSZ;
+    private java.lang.Double SSN; //srednica nominalna
+    private java.lang.Double SSW; // srednica ww
+    private java.lang.Double SSZ; //srednica zewn
     private String STP_N;
     private java.lang.String STO_D;
     private java.lang.String STO_N;
@@ -133,6 +144,9 @@ public class ShpBaseEntity {
     private String ROC_D;
     private String ROC_N;
 
+    private String GNAME; // mapa kluczy danych branżowych
+    private String GVALUE;// mapa wartości danych branżowych
+
     //SWDE:
     private String G5NRO;
     private Double G5PEW;
@@ -177,4 +191,35 @@ public class ShpBaseEntity {
     private String GRKO_N;
     private String TXT;
     private String BUD;
+
+
+    /**
+     * Buduje mapę key->value na podstawie pól GNAME i GVALUE
+     * @return
+     */
+    public Map<String, String> extractGNAMEList() {
+        Map<String, String> result = new LinkedHashMap<>();
+
+        if (GNAME == null || GVALUE == null) return result;
+
+        String[] keys = GNAME.split(",");
+        String[] values = GVALUE.split(",");
+
+        int length = Math.min(keys.length, values.length);
+
+        for (int i = 0; i < length; i++) {
+            result.put(keys[i].trim(), values[i].trim());
+        }
+
+        return result;
+    }
+
+    public void setPlikModificationDate(File file){
+        long lastModified = file.lastModified();
+        Date date = new Date(lastModified);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        this.plikModificationDate = sdf.format(date);
+    }
+
+
 }

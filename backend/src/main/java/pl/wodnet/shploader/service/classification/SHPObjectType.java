@@ -1,0 +1,98 @@
+package pl.wodnet.shploader.service.classification;
+
+public enum SHPObjectType {
+    C_PRZEWOD_CIEPLOWNICZY("CPR"),
+    C_URZADZENIE_TECHNICZNE("CUT"),
+    C_ZASUWA_LUB_ZAWOR("CZA"),
+
+    E_SZAFA_ENERGETYCZNA("ESE"),
+    E_KIERUNEK_SIECI_NAPOW_ELEKTRO_WYSOKIEGO_NAPIECIA("ELW"),
+    E_KIERUNEK_SIECI_NAPOW_ELEKTRO_SREDNIEGO_NAPIECIA("ELS"),
+    E_KIERUNEK_SIECI_NAPOW_ELEKTRO_NISKIEGO_NAPIECIA("ELN"),
+    E_LATARNIA("ELA"),
+
+    E_TURBINA_WIATROWA("ETW"),
+    E_URZADZENIE_TECHNICZNE("EUT"),
+    E_MASZT_OSWIETLENIOWY("EMO"),
+    E_PRZEWOD_ELEKTROENERGETYCZNY("EPR"),
+    E_STACJA_TRANSFORMATOROWA("ETS"),
+
+    G_PRZEWOD_GAZOWY("GPR"),
+    G_STACJA_GAZOWA("GGS"),
+    G_URZADZENIE_TECHNICZNE("GUT"),
+    G_ZBIORNIK_GAZU("GZB"),
+    G_SZAFA_GAZOWA_LUB_KONTENER("GSG"),
+    G_ZASUWA_LUB_ZAWOR("GZA"),
+
+    I_BUDOWLA_PODZIEMNA("IBP"),
+    I_KOMORA_PODZIEMNA("IKP"),
+    I_SLUP_TRAKCYJNY("IST"),
+    I_WLAZ_DO_KOMORY_LUB_KANALU("IWZ"),
+    I_SLUP_PRZEWODOW_NAPOWIETRZNYCH("ISN"),
+
+    K_KRATKA_SCIEKOWA("KKS"),
+    K_URZADZENIE_TECHNICZNE("KUT"),
+    K_ODWODNIENIE_LINIOWE("KDK"),
+    K_OSADNIK_SZAMBO("KOL"),
+    K_STUDNIA_KANALIZACYJNA("KSD"),
+    K_PRZEPOMPOWNIA("KPR"),
+    K_WYLOT_KANALU("KWK"),
+    K_ZASUWA_LUB_ZAWOR("KZA"),
+
+    P_RZEDNA("PRZ"),
+    P_PUNKT_ROBOCZY("PRB"),
+
+    L_KANAL_TECHNOLOGICZNY("LKT"),
+    L_OBUDOWA_OCHRONNA_PRZEWODU("LOB"),
+
+    S_PRZEWOD_SPECJALNY("SPR"),
+    S_URZADZENIE_TECHNICZNE("SUT"),
+
+    T_WIEZA_TELEKOMUNIKACYJNA("TWT"),
+    T_KIERUNEK_SIECI_NAPOWIETRZENEN_POW("TLT"),
+    T_PRZEWOD_TELEKOMUNIKACYJNY("TPR"),
+    T_URZADZENIE_TECHNICZNE("TUT"),
+    T_SLUPEK_TELEKOMUNIKACYJNY("TST"),
+    T_SZAFA_TELEKOMUNIKACYJNA_LUB_KONTENER("TSZ"),
+
+    W_HYDRANT("WDT"),
+    W_HYDROFORNIA("WDF"),
+    W_PRZEWOD_WODOCIAGOWY("WPR"),
+    W_STUDNIA_GLEBINOWA("WSG"),
+    W_STUDNIA("WST"),
+    W_ZDROJ_ULICZNY("WZU"),
+    W_URZADZENIE_TECHNICZNE("WUT"),
+    W_ZASUWA_LUB_ZAWOR("WZA"),
+
+    X_PRZEWOD_NIEZIDENTYFIKOWANY("XPR"),
+    X_URZADZENIE_TECHNICZNE("XUT"),
+
+    Z_ZMIANA_CECH_PRZEWODU("ZCP"),
+
+    NIEZNANY("NIEZNANY");
+
+    private final String label;
+
+    SHPObjectType(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public static SHPObjectType fromLabel(String label) {
+        if (label == null) {
+            return NIEZNANY;
+        }
+
+        for (SHPObjectType type : values()) {
+            if (type.label.equalsIgnoreCase(label)) {
+                return type;
+            }
+        }
+
+        return NIEZNANY;
+    }
+}
+

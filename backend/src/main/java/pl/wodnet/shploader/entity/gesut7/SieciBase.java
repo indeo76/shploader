@@ -4,8 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.wodnet.shploader.entity.ShpEntity;
+import pl.wodnet.shploader.enums.GNAME;
 
 import javax.persistence.MappedSuperclass;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -35,5 +37,26 @@ public abstract class SieciBase extends GesutBaseEntity{
         dlugosc = shp.getXLENGTH();
         izolacja = shp.getOBD_N();
         przebieg = shp.getPRZ_N();
+        this.assignGNAMEFields(shp);
+    }
+
+    @Override
+    protected void assignGNAMEFields(ShpEntity shp) {
+        super.assignGNAMEFields(shp);
+
+        Map<String, String> mapa = shp.extractGNAMEList();
+        if(mapa.containsKey(GNAME.MATERIAl.getLabel())){
+            this.material = mapa.get(GNAME.MATERIAl.getLabel());
+        }
+        if(mapa.containsKey(GNAME.PRZEBIEG.getLabel())){
+            this.przebieg = mapa.get(GNAME.PRZEBIEG.getLabel());
+        }
+        if(mapa.containsKey(GNAME.SREDNICA_URZADZENIA.getLabel())){
+            try{
+                this.srednic = Double.parseDouble(mapa.get(GNAME.SREDNICA_URZADZENIA.getLabel()));
+            } catch (Exception ex){
+                System.out.println(ex.getMessage());
+            }
+        }
     }
 }

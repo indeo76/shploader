@@ -2,6 +2,7 @@ package pl.wodnet.shploader.service;
 
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.geometry.jts.JTS;
@@ -45,6 +46,7 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -462,5 +464,61 @@ public class ShpService {
         ImportResultDTO dto = new ImportResultDTO(file.getName(), featureCount, 0, new ArrayList<>());
         return dto;
     }
+
+    public ImportResultDTO importFile(String filePath, List<GeoinfoKodyDTO> geoinfoKodyDTOList, Charset charset, boolean splitComplexGeom) throws IOException {
+        LOGGER.info("Wczytywanie pliku " + filePath);
+        Long startTime = System.currentTimeMillis();
+        System.setProperty("org.geotools.referencing.forceXY", "true");
+        int targetSrid = 2177;
+        File file = new File(filePath);
+        file.setReadOnly();
+        Integer totalCount = 0;
+        Integer savedCount = 0;
+        //Klucz pozwalajacy znalezc bledny obiekt w pliku shp
+        String key = "XIDENTIFI1";
+        List<ImportErrorDTO> errors = new ArrayList<>();
+        Map<String, Object> params = new HashMap<>();
+        params.put("url", file.toURI().toURL());
+        params.put("charset", charset);
+        DataStore dataStore = DataStoreFinder.getDataStore(params);
+        SimpleFeatureIterator iterator = null;
+        try {
+            Map<String, String> connect = new HashMap();
+            connect.put("url", file.toURI().toString());
+
+            String[] typeNames = dataStore.getTypeNames();
+            String typeName = typeNames[0];
+
+            SimpleFeatureSource featureSource = dataStore.getFeatureSource(typeName);
+            SimpleFeatureCollection collection = featureSource.getFeatures();
+
+            iterator = collection.features();
+            totalCount = collection.size();
+            savedCount = processFeatures(geoinfoKodyDTOList, iterator, file, key, targetSrid, errors, splitComplexGeom);
+        }catch (TransformException ex) {
+            LOGGER.error(String.format("Blad transformacji geometrii: %s", ex.getMessage()));
+        }catch (ParseException ex) {
+            LOGGER.error(String.format("Blad ParseException: %s", ex.getMessage()));
+        }catch (FactoryException ex) {
+            LOGGER.error(String.format("Blad FactoryException: %s", ex.getMessage()));
+        }catch (RuntimeException ex) {
+            LOGGER.error(String.format("Blad RuntimeException: %s", ex.getMessage()));
+        }catch (NoSuchMethodError ex){
+            LOGGER.error(String.format("Blad NoSuchMethodError: %s", ex.getMessage()));
+        } catch (Throwable e) {
+            LOGGER.error(String.format("Wystapil blad importFile(): %s", e.getMessage()));
+        }finally {
+            if(iterator != null){
+                iterator.close();
+            }
+            dataStore.dispose();
+            LOGGER.info("Wykonano dataStore.dispose()");
+        }
+        LOGGER.info("Zakonczono wczytywanie pliku " + filePath + " (" + Paths.get(filePath.replace(".shp",".dbf")).toFile().length()/1000 + "kb)");
+        LOGGER.info("Czas wykonania plik: " + (System.currentTimeMillis() - startTime));
+        //todo:
+        return new ImportResultDTO(file.getName(), totalCount , savedCount, errors);
+    }
+
 
 }

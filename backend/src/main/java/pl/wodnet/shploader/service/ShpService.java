@@ -242,9 +242,9 @@ public class ShpService {
         try{
             propNowyKod = propertyList.stream().filter(aaa -> aaa.getName().toString().equals("XCODE_N")).collect(Collectors.toList()).get(0);
             propStaryKod = propertyList.stream().filter(aaa -> aaa.getName().toString().equals("DKP_N")).collect(Collectors.toList()).get(0);
-            if(propStaryKod.getValue() != null){
+            if(propStaryKod.getValue() != null && !propStaryKod.getValue().toString().isBlank()){
                 kodMnemoniczny = propStaryKod.getValue().toString();
-            } else if(propNowyKod.getValue() != null){
+            } else if(propNowyKod.getValue() != null &&  !propNowyKod.getValue().toString().isBlank()){
                 kodMnemoniczny = propNowyKod.getValue().toString() + "*";
             }
         } catch (Exception ex) {

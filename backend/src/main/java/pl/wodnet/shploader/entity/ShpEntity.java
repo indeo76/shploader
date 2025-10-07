@@ -37,6 +37,9 @@ public class ShpEntity extends ShpBaseEntity{
     @Column(name = "the_geom", columnDefinition = "GEOMETRY")
     private Geometry geom;
 
+    @Column(name = "kod")
+    private String kod;
+
 //    @ElementCollection
 //    @CollectionTable(name = "property_map", joinColumns = @JoinColumn(name = "id_shp"))
 //    //@MapKeyJoinColumn(name = "TASK_ID")

@@ -167,6 +167,7 @@ public class ShpService {
                         kodMnemoniczny = Tools.getNameWithoutExtension(file.getName());
                     }
                     String tableName = confService.findTargetTable(kodMnemoniczny, geoinfoKodyDTOList);// todo tu ma trafic chyba stary kod nie nowy
+                    shpEntity.setKod(kodMnemoniczny);
                     shpEntity.setTableName(tableName);
                     shpEntity.setGeom(geom);
                     try{

@@ -100,109 +100,125 @@ public class ShpService {
     public List<ShpEntity> processFeature(EntityManager em, File file, SimpleFeature feature, Integer iGeomObjects, String key, int targetSrid, List<GeoinfoKodyDTO> geoinfoKodyDTOList, int i, String BATCH_SIZE, List<ImportErrorDTO> errors, boolean splitComplexGeom) throws TransformException, ParseException, FactoryException {
         List<ShpEntity> shpEntityList = new ArrayList<>();
         Geometry complexGeometry = (Geometry) feature.getDefaultGeometry();
+        Integer geometriesCount;
         if(complexGeometry != null){
+            geometriesCount = complexGeometry.getNumGeometries();
             if(splitComplexGeom){
-
-            } else {
-
-            }
-            Integer geometriesCount = complexGeometry.getNumGeometries();
-            if(geometriesCount > 1){
-                LOGGER.warn(String.format("Plik: %s Liczba geometrii > 1: %s, %s: %s", file.getName(),geometriesCount, key, feature.getProperty(key).getValue()));
-            }else if(geometriesCount ==0){
-                LOGGER.info("Liczba geometrii: " + geometriesCount);
-            }
-            for(Integer iGeom = 0; iGeom< geometriesCount; iGeom++){
-                //todo cała reszta..
-//                iGeomObjects ++;
-                Geometry g = complexGeometry.getGeometryN(iGeom);
-                if(g != null){
-                    GeometryAttribute sourceGeometry = feature.getDefaultGeometryProperty();
-                    GeometryType geometryType = sourceGeometry.getType();
-                    CoordinateReferenceSystem sourceCRS = geometryType.getCoordinateReferenceSystem();
-                    if(sourceCRS == null){
-                        sourceCRS = CRS.decode("EPSG:" + 2177);
-                        //LOGGER.info("Brak ukladu wspolrzednych");
-                    }
-//                    ReferenceIdentifier sref = sourceCRS.getCoordinateSystem().getName();
-//                    String srName = sref.getCode();
-
-                    CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:" + targetSrid);
-                    MathTransform transform = null;
-                    try{
-                        transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
-                    }catch (Exception ex){
-                        int d = 0;
-                    }
-
-                    org.locationtech.jts.geom.Geometry reprojectedGeometry = JTS.transform(g, transform);
-                    g = reprojectedGeometry;
-
-                    PrecisionModel pmodel = new PrecisionModel();
-                    pmodel.makePrecise(2); // ?????
-                    String wkt = g.toString();
-
-
-                    GeometryFactory factory = new GeometryFactory(pmodel, targetSrid);
-
-                    WKTReader wktRdr = new WKTReader(factory);
-                    Geometry geom = wktRdr.read(wkt);
-                    Geometry complexGeom = wktRdr.read(complexGeometry.toString());
-                    complexGeom.setSRID(2177);
-                    complexGeom = JTS.transform(complexGeom, transform);
-                    geom.setSRID(targetSrid);
-                    //end processFeature
-
-                    Map<String, String> properties = new HashMap<>();
-                    Map<String, String> propertyTypes = new HashMap<>();
-//                        Collection<Property> z = prepareProperties(feature.getProperties());
-                    List<Property> propertyList = new ArrayList<>(feature.getProperties());
-
-                    String kodMnemoniczny = null;
-                    ShpEntity shpEntity = new ShpEntity();
-                    shpEntity.setPlik(file.getName());
-                    shpEntity.setPlikModificationDate(file);
-                    kodMnemoniczny = findKodMnemoniczny(shpEntity, properties, propertyTypes, propertyList, kodMnemoniczny);
-                    if(kodMnemoniczny==null){
-                        kodMnemoniczny = Tools.getNameWithoutExtension(file.getName());
-                    }
-                    String tableName = confService.findTargetTable(kodMnemoniczny, geoinfoKodyDTOList);// todo tu ma trafic chyba stary kod nie nowy
-                    shpEntity.setKod(kodMnemoniczny);
-                    shpEntity.setTableName(tableName);
-                    shpEntity.setGeom(geom);
-                    try{
-                        shpEntity.setRoot(classificationProvider.getRoot(shpEntity.getXCODE_N()));
-                        shpEntity.setGeomType(classificationProvider.getGeomType(shpEntity.getXCODE_N()));
-                        shpEntity.setBranza(classificationProvider.getBranza(shpEntity.getXCODE_N()));
-                        shpEntity.setObiektType(classificationProvider.getObiektType(shpEntity.getXCODE_N()));
-                    } catch (Exception ex){
-
-                    }
-
-//                                shpEntity.setGeom(GeometryExtractor.extractGeometry(feature));
-                    //shpEntity.setPropertyTypes(propertyTypes);
-                    //shpEntity.setProperties(properties);
-                    em.persist(shpEntity);
-                    if(shpEntity.getTableName() !=null){
-                        processShpEntity(em, shpEntity);
-//                        LOGGER.info(String.format("Zapisano obiekt w tabeli %s, kod stary: %s, kod nowy: %s", shpEntity.getTableName(), shpEntity.getDKP_N(), shpEntity.getXCODE_N()));
-                    }
-                    shpEntityList.add(shpEntity);
-                    iGeomObjects = iGeomObjects + 1;
-                    if(i % Integer.parseInt(BATCH_SIZE) == 0){
-                        synchronizeTransaction(em);
-//                            LOGGER.info("Czas if(i % " + i + " == 0) start: " + (System.currentTimeMillis() - startTime));
-                        LOGGER.info(String.format("Saved: %s %s (kod nowy: %s), (kod stary: %s), (kod uzyty: %s): %s features / geoms: %s", file.getName(), tableName, shpEntity.getXCODE_N(), shpEntity.getDKP_N(), kodMnemoniczny, i, iGeomObjects));
-//                            LOGGER.info("Czas if(i % " + i + " == 0) end: " + (System.currentTimeMillis() - startTime));
-                    }
+                if(geometriesCount > 1){
+                    LOGGER.warn(String.format("Plik: %s Liczba geometrii > 1: %s, %s: %s", file.getName(),geometriesCount, key, feature.getProperty(key).getValue()));
+                }else if(geometriesCount ==0){
+                    LOGGER.info("Liczba geometrii: " + geometriesCount);
                 }
+                for(Integer iGeom = 0; iGeom< geometriesCount; iGeom++){
+                    //todo cała reszta..
+//                iGeomObjects ++;
+                    Geometry g = complexGeometry.getGeometryN(iGeom);
+                    iGeomObjects = processGeometry(em, file, feature, iGeomObjects, targetSrid, geoinfoKodyDTOList, i, BATCH_SIZE, g, complexGeometry, shpEntityList);
+                }
+            } else {
+                processGeometry(em, file, feature, iGeomObjects, targetSrid, geoinfoKodyDTOList, i, BATCH_SIZE, complexGeometry, complexGeometry, shpEntityList);
             }
+
         }else{
             String identifier = feature.getProperty(key).getValue().toString();
-            LOGGER.error(String.format("Pusta geometria w obiekcie w pliku: %s  %s: %s", file.getName(), key, identifier));
+            LOGGER.warn(String.format("Pusta geometria w obiekcie w pliku: %s  %s: %s", file.getName(), key, identifier));
             errors.add(new ImportErrorDTO(key, identifier.toString(), FeatureError.PUSTA_GEOMETRIA));
         }
         return shpEntityList;
+    }
+
+    private Integer processGeometry(EntityManager em, File file, SimpleFeature feature, Integer iGeomObjects, int targetSrid, List<GeoinfoKodyDTO> geoinfoKodyDTOList, int i, String BATCH_SIZE, Geometry g, Geometry complexGeometry, List<ShpEntity> shpEntityList) throws FactoryException, TransformException, ParseException {
+        try {
+            if(g != null){
+                GeometryAttribute sourceGeometry = feature.getDefaultGeometryProperty();
+                GeometryType geometryType = sourceGeometry.getType();
+                CoordinateReferenceSystem sourceCRS = geometryType.getCoordinateReferenceSystem();
+                if(sourceCRS == null){
+                    sourceCRS = CRS.decode("EPSG:" + 2177);
+                    //LOGGER.info("Brak ukladu wspolrzednych");
+                }
+//                    ReferenceIdentifier sref = sourceCRS.getCoordinateSystem().getName();
+//                    String srName = sref.getCode();
+
+                CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:" + targetSrid);
+                MathTransform transform = null;
+                try{
+                    transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
+                }catch (Exception ex){
+                    int d = 0;
+                }
+
+                Geometry reprojectedGeometry = JTS.transform(g, transform);
+                g = reprojectedGeometry;
+
+                PrecisionModel pmodel = new PrecisionModel();
+                pmodel.makePrecise(2); // ?????
+                String wkt = g.toString();
+
+
+                GeometryFactory factory = new GeometryFactory(pmodel, targetSrid);
+
+                WKTReader wktRdr = new WKTReader(factory);
+                Geometry geom = wktRdr.read(wkt);
+                Geometry complexGeom = wktRdr.read(complexGeometry.toString());
+                complexGeom.setSRID(2177);
+                complexGeom = JTS.transform(complexGeom, transform);
+                geom.setSRID(targetSrid);
+                //end processFeature
+
+                Map<String, String> properties = new HashMap<>();
+                Map<String, String> propertyTypes = new HashMap<>();
+//                        Collection<Property> z = prepareProperties(feature.getProperties());
+                List<Property> propertyList = new ArrayList<>(feature.getProperties());
+
+                String kodMnemoniczny = null;
+                ShpEntity shpEntity = new ShpEntity();
+                if(g.getNumGeometries() > 1){
+                    shpEntity.setMultiGeometry(true);
+                } else {
+                    shpEntity.setMultiGeometry(false);
+                }
+                shpEntity.setPlik(file.getName());
+                shpEntity.setPlikModificationDate(file);
+                kodMnemoniczny = findKodMnemoniczny(shpEntity, properties, propertyTypes, propertyList, kodMnemoniczny);
+                if(kodMnemoniczny==null){
+                    kodMnemoniczny = Tools.getNameWithoutExtension(file.getName());
+                }
+                String tableName = confService.findTargetTable(kodMnemoniczny, geoinfoKodyDTOList);// todo tu ma trafic chyba stary kod nie nowy
+                shpEntity.setKod(kodMnemoniczny);
+                shpEntity.setTableName(tableName);
+                shpEntity.setGeom(geom);
+                try{
+                    shpEntity.setRoot(classificationProvider.getRoot(shpEntity.getXCODE_N()));
+                    shpEntity.setGeomType(classificationProvider.getGeomType(shpEntity.getXCODE_N()));
+                    shpEntity.setBranza(classificationProvider.getBranza(shpEntity.getXCODE_N()));
+                    shpEntity.setObiektType(classificationProvider.getObiektType(shpEntity.getXCODE_N()));
+                } catch (Exception ex){
+
+                }
+
+//                                shpEntity.setGeom(GeometryExtractor.extractGeometry(feature));
+                //shpEntity.setPropertyTypes(propertyTypes);
+                //shpEntity.setProperties(properties);
+                em.persist(shpEntity);
+                if(shpEntity.getTableName() !=null){
+                    processShpEntity(em, shpEntity);
+//                        LOGGER.info(String.format("Zapisano obiekt w tabeli %s, kod stary: %s, kod nowy: %s", shpEntity.getTableName(), shpEntity.getDKP_N(), shpEntity.getXCODE_N()));
+                }
+                shpEntityList.add(shpEntity);
+                iGeomObjects = iGeomObjects + 1;
+                if(i % Integer.parseInt(BATCH_SIZE) == 0){
+                    synchronizeTransaction(em);
+//                            LOGGER.info("Czas if(i % " + i + " == 0) start: " + (System.currentTimeMillis() - startTime));
+                    LOGGER.info(String.format("Saved: %s %s (kod nowy: %s), (kod stary: %s), (kod uzyty: %s): %s features / geoms: %s", file.getName(), tableName, shpEntity.getXCODE_N(), shpEntity.getDKP_N(), kodMnemoniczny, i, iGeomObjects));
+//                            LOGGER.info("Czas if(i % " + i + " == 0) end: " + (System.currentTimeMillis() - startTime));
+                }
+            }
+        } catch (Exception ex) {
+            LOGGER.error(String.format("Wystapil blad przetwarzania geometrii pliku: %s blad: %s", file.getName(), ex.getMessage()));
+        }
+
+        return iGeomObjects;
     }
 
     public List<String> prepareTableListForMode(ShpImportModeEnum mode){

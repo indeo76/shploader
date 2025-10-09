@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import pl.wodnet.shploader.dto.GeoinfoKodyDTO;
+import pl.wodnet.shploader.service.classification.TargetTableProvider;
+import pl.wodnet.shploader.service.classification.TargetTableResult;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +24,7 @@ public class ConfService {
 
     public List<GeoinfoKodyDTO> importGeoinfoKody(){
         List<GeoinfoKodyDTO> geoifoKodyDTOList = null;
-        String filePath = Paths.get("C:\\Modul-mapy\\shploader\\volumen", "geoinfo_kody.json").toString();
+        String filePath = Paths.get("D:\\rozne\\2025-wrzesnia\\2025_geoinfo_kody.json").toString();
 
         String confFile = null;
         try {
@@ -40,15 +42,15 @@ public class ConfService {
     }
 
     @Cacheable(value = "findTargetTable", unless="#result==null")
-    public String findTargetTable(String kodMnemoniczny, List<GeoinfoKodyDTO> geoinfoKodyDTOS){
-        String tableName=null;
+    public TargetTableResult findTargetTable(String kodMnemoniczny, List<GeoinfoKodyDTO> geoinfoKodyDTOS){
+        TargetTableResult result = new TargetTableResult(null, TargetTableProvider.BRAK);
         for(GeoinfoKodyDTO geoinfo:geoinfoKodyDTOS){
             if(kodMnemoniczny.equals(geoinfo.getKod_mnemoniczny())){
-                tableName = geoinfo.getTabela();
+                result = new TargetTableResult(geoinfo.getTabela(), TargetTableProvider.GEOINFO_KODY);
                 break;
             }
         }
-        return tableName;
+        return result;
     }
 
     public List<String> getFileListByTableName(String tableName, List<GeoinfoKodyDTO> geoinfoKodyDTOList) {

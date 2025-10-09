@@ -3,13 +3,9 @@ package pl.wodnet.shploader.entity;
 import lombok.Getter;
 import lombok.Setter;
 import org.locationtech.jts.geom.Geometry;
-import pl.wodnet.shploader.service.classification.SHPBranza;
-import pl.wodnet.shploader.service.classification.SHPGeomType;
-import pl.wodnet.shploader.service.classification.SHPObjectType;
-import pl.wodnet.shploader.service.classification.SHPRoot;
+import pl.wodnet.shploader.service.classification.*;
 
 import javax.persistence.*;
-import java.util.Map;
 
 @Entity
 @Getter
@@ -39,6 +35,14 @@ public class ShpEntity extends ShpBaseEntity{
 
     @Column(name = "kod")
     private String kod;
+
+    @Column(name = "kod_provider")
+    @Enumerated(EnumType.STRING)
+    private KodProvider kodProvider;
+
+    @Column(name = "target_table_provider")
+    @Enumerated(EnumType.STRING)
+    private TargetTableProvider targetTableProvider;
 
     @Column(name = "multi_geom")
     private Boolean multiGeometry;

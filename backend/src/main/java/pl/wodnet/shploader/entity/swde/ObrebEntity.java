@@ -19,6 +19,6 @@ public class ObrebEntity extends SWDEBaseEntity{
     public ObrebEntity(ShpEntity shpEntity) {
         super(shpEntity);
 //        this.setTableName(Constants.OBREBY);
-        this.g5naz = shpEntity.getG5NAZ();
+        this.g5naz = shpEntity.getNAZWAWLASN();
     }
 }

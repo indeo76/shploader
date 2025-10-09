@@ -18,6 +18,9 @@ public abstract class GesutBaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long gid;
 
+    @Column(name = "shp_entity_id")
+    private Long shpEntityId;
+
     @Column(name = "the_geom", columnDefinition = "GEOMETRY")
     private Geometry geom;
 
@@ -40,6 +43,7 @@ public abstract class GesutBaseEntity {
     private String g7_opis;
 
     public GesutBaseEntity(ShpEntity shp) {
+        shpEntityId = shp.getGid();
         geom = shp.getGeom();
         zrodlo = shp.getMPD_N();
         ulica = shp.getULI_N();

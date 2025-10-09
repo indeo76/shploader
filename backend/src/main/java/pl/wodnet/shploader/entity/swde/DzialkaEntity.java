@@ -21,6 +21,22 @@ public class DzialkaEntity extends SWDEBaseEntity {
     public DzialkaEntity(ShpEntity shpEntity) {
         super(shpEntity);
         this.obreb = shpEntity.getOBREB();
-        this.numer = shpEntity.getNUMER();
+        this.numer = resolveNumerDzialki(shpEntity.getIDDZIALKI());
+    }
+
+    /**
+     *
+     * @param terytAndDzialka
+     * @return
+     * wyciaga nr dzialki z ciagu z terytem np: 303005_5.0343.49/1
+     */
+    private String resolveNumerDzialki(String terytAndDzialka){
+        if(terytAndDzialka != null && terytAndDzialka.trim().length()>0){
+            int lastDot = terytAndDzialka.lastIndexOf('.');
+            String lastPart = terytAndDzialka.substring(lastDot + 1);
+            return lastPart;
+        } else {
+            return null;
+        }
     }
 }

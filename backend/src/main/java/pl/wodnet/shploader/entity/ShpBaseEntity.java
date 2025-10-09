@@ -2,15 +2,12 @@ package pl.wodnet.shploader.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import pl.wodnet.shploader.enums.GNAME;
 
 import javax.persistence.*;
 import java.io.File;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -151,6 +148,8 @@ public class ShpBaseEntity {
     private String G5NRO;
     private Double G5PEW;
     private String G5NAZ; //nazwa
+    private String NAZWAWLASN; // nazwa nowa (obreby)
+    private String IDDZIALKI; //nowa - id dzialki razem z terytem
     private String G5DTW;
     private String G5DTU;
     private String G5RJEW;
@@ -191,7 +190,6 @@ public class ShpBaseEntity {
     private String GRKO_N;
     private String TXT;
     private String BUD;
-
 
     /**
      * Buduje mapę key->value na podstawie pól GNAME i GVALUE

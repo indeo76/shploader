@@ -38,4 +38,6 @@ public interface Constants {
     public static final String OBREBY = "obreby";
     public static final String BUDYNKI = "budynki";
     public static final String DZIALKI = "dzialki";
+    public static final String WLASCICIELE = "wlasciciele";
+
 }

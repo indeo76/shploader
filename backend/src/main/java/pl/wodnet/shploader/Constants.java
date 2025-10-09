@@ -1,5 +1,7 @@
 package pl.wodnet.shploader;
 
+import java.nio.file.Paths;
+
 public class Constants {
 
     public static String SHP_GESUT_DIRECTORY = System.getenv()
@@ -7,6 +9,9 @@ public class Constants {
 
     public static String SHP_SWDE_DIRECTORY = System.getenv()
             .getOrDefault("SHP_SWDE_DIRECTORY", "/volume/swde");
+
+    public static String GEOINFO_KODY_FILE = System.getenv()
+            .getOrDefault("GEOINFO_KODY_FILE", "/volume/conf/geoinfo_kody.json");
 
     public static final String WOD_SIECI = "wod_sieci";
     public static final String WOD_ARMATURA = "wod_armatura";
@@ -35,6 +40,10 @@ public class Constants {
     public static final String SPC_ARMATURA = "spc_armatura";
     public static final String SPC_SIECI = "spc_sieci";
     public static final String SPC_OBIEKTY = "spc_obiekty";
+
+    public static final String INNE_ARMATURA = "inne_armatura";
+    public static final String INNE_SIECI = "inne_sieci";
+    public static final String INNE_OBIEKTY = "inne_obiekty";
 
     public static final String SYTUACJA = "sytuacja";
 

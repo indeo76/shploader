@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import pl.wodnet.shploader.Constants;
 import pl.wodnet.shploader.dto.GeoinfoKodyDTO;
 import pl.wodnet.shploader.service.classification.TargetTableProvider;
 import pl.wodnet.shploader.service.classification.TargetTableResult;
@@ -24,7 +25,7 @@ public class ConfService {
 
     public List<GeoinfoKodyDTO> importGeoinfoKody(){
         List<GeoinfoKodyDTO> geoifoKodyDTOList = null;
-        String filePath = Paths.get("D:\\rozne\\2025-wrzesnia\\2025_geoinfo_kody.json").toString();
+        String filePath = Constants.GEOINFO_KODY_FILE;
 
         String confFile = null;
         try {

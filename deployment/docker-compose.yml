@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  shploader:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: shploader:latest
+    ports:
+      - "8095:8095"
+    volumes:
+      - "d:/projekty/shploader/shploader/deployment/conf:/volume/conf"
+      - "d:/rozne/2025-wrzesnia/2025-09-shp/PWiK/SHAPE GESUT:/volume/gesut"
+      - "d:/rozne/2025-wrzesnia/2025-09-shp/PWiK/shp_swde/nowe-cp1250:/volume/swde"

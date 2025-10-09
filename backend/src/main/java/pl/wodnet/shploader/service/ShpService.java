@@ -249,6 +249,9 @@ public class ShpService {
             tablesList.add(Constants.SPC_ARMATURA);
             tablesList.add(Constants.SPC_SIECI);
             tablesList.add(Constants.SPC_OBIEKTY);
+            tablesList.add(Constants.INNE_ARMATURA);
+            tablesList.add(Constants.INNE_SIECI);
+            tablesList.add(Constants.INNE_OBIEKTY);
         }else if(mode == ShpImportModeEnum.SWDE){
             tablesList.add(Constants.OBREBY);
             tablesList.add(Constants.BUDYNKI);
@@ -433,6 +436,15 @@ public class ShpService {
         }else if(shpEntity.getTableName().contains(Constants.BUDYNKI)){
             BudynekEntity budynekEntity = new BudynekEntity(shpEntity);
             em.persist(budynekEntity);
+        } else if (shpEntity.getTableName().contains(Constants.INNE_ARMATURA)) {
+            InneArmaturaEntity entity = new InneArmaturaEntity(shpEntity);
+            em.persist(entity);
+        } else if (shpEntity.getTableName().contains(Constants.INNE_SIECI)) {
+            InneSieciEntity entity = new InneSieciEntity(shpEntity);
+            em.persist(entity);
+        } else if (shpEntity.getTableName().contains(Constants.INNE_OBIEKTY)) {
+            InneObiektyEntity entity = new InneObiektyEntity(shpEntity);
+            em.persist(entity);
         }
     }
 

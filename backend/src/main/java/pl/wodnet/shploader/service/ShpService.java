@@ -41,6 +41,7 @@ import pl.wodnet.shploader.service.classification.IClassificationProvider;
 import pl.wodnet.shploader.service.classification.KodResult;
 import pl.wodnet.shploader.service.classification.KodProvider;
 import pl.wodnet.shploader.service.classification.TargetTableResult;
+import pl.wodnet.shploader.systemstatus.StatusService;
 import pl.wodnet.shploader.tools.Tools;
 
 import javax.persistence.EntityManager;
@@ -72,6 +73,9 @@ public class ShpService {
 
     @Autowired
     IClassificationProvider classificationProvider;
+
+    @Autowired
+    StatusService statusService;
 
     @Value("${spring.jpa.properties.hibernate.jdbc.batch_size}")
     private String BATCH_SIZE;
@@ -214,7 +218,9 @@ public class ShpService {
                 if(i % Integer.parseInt(BATCH_SIZE) == 0){
                     synchronizeTransaction(em);
 //                            LOGGER.info("Czas if(i % " + i + " == 0) start: " + (System.currentTimeMillis() - startTime));
-                    LOGGER.info(String.format("Saved: %s %s (kod nowy: %s), (kod stary: %s), (kod uzyty: %s): %s features / geoms: %s", file.getName(), targetTableResult.getTableName(), shpEntity.getXCODE_N(), shpEntity.getDKP_N(), kodResult.getKod(), i, iGeomObjects));
+                    String taskDescription = String.format("Saved: %s %s (kod nowy: %s), (kod stary: %s), (kod uzyty: %s): %s features / geoms: %s", file.getName(), targetTableResult.getTableName(), shpEntity.getXCODE_N(), shpEntity.getDKP_N(), kodResult.getKod(), i, iGeomObjects);
+                    statusService.setCurrentTaskDescrription(taskDescription);
+                    LOGGER.info(taskDescription);
 //                            LOGGER.info("Czas if(i % " + i + " == 0) end: " + (System.currentTimeMillis() - startTime));
                 }
             }

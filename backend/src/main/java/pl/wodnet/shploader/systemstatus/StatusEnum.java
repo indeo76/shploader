@@ -1,4 +1,4 @@
-package pl.wodnet.shploader.enums;
+package pl.wodnet.shploader.systemstatus;
 
 public enum StatusEnum {
     FREE,

@@ -1,57 +1,21 @@
 package pl.wodnet.shploader.controller;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.geotools.data.DataStore;
-import org.geotools.data.DataStoreFinder;
-import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.data.simple.SimpleFeatureIterator;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.CRS;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
-import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.type.GeometryType;
-import org.opengis.feature.type.PropertyType;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import pl.wodnet.shploader.*;
 import pl.wodnet.shploader.dto.GeoinfoKodyDTO;
-import pl.wodnet.shploader.dto.ImportErrorDTO;
 import pl.wodnet.shploader.dto.ImportResultDTO;
-import pl.wodnet.shploader.entity.*;
-import pl.wodnet.shploader.entity.gesut7.*;
-import pl.wodnet.shploader.entity.swde.BudynekEntity;
-import pl.wodnet.shploader.entity.swde.DzialkaEntity;
-import pl.wodnet.shploader.entity.swde.ObrebEntity;
 import pl.wodnet.shploader.enums.CharsetEnum;
 import pl.wodnet.shploader.enums.ShpImportModeEnum;
-import pl.wodnet.shploader.enums.StatusEnum;
-import pl.wodnet.shploader.geometry.SimpleFeatureExtended;
+import pl.wodnet.shploader.systemstatus.StatusEnum;
 import pl.wodnet.shploader.service.*;
-import pl.wodnet.shploader.tools.GeometryExtractor;
-import pl.wodnet.shploader.tools.Tools;
+import pl.wodnet.shploader.systemstatus.StatusService;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -102,6 +66,7 @@ public class ShpController {
 
     @RequestMapping(value = "/importDirectory", method = RequestMethod.GET)
     public String importDirectory(@RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
+        statusService.setBuisy(mode);
         Charset charset = Charset.forName(kodowanie.getCharsetName());
         String filePath = resolveDirectoryPath(mode);
         List<String> tablesList = shpService.prepareTableListForMode(mode);
@@ -118,12 +83,13 @@ public class ShpController {
             }
         }
         LOGGER.info("Zakonczono wczytywanie plików");
+        statusService.setFree();
         return "finish";
     }
 
     @RequestMapping(value = "/importDeclaredTables", method = RequestMethod.GET)
     public List<ImportResultDTO> importDeclaredTables(@RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
-        statusService.setStatus(StatusEnum.BUSY);
+        statusService.setBuisy(mode);
         List<ImportResultDTO> resultDTOList = new ArrayList<>();
         List<String> tablesList = shpService.prepareTableListForMode(mode);
         shpService.truncateTables(tablesList, getSchemaOfMode(mode));
@@ -132,9 +98,9 @@ public class ShpController {
 //            LayerDTO layerDTO = new LayerDTO(tableName, count);
 //            layerDTOList.add(layerDTO);
         }
-        statusService.setStatus(StatusEnum.FREE);
 //        restartService.restartApp();
         LOGGER.info("Zakonczono wczytywanie plików");
+        statusService.setFree();
         return resultDTOList;
     }
 
@@ -158,9 +124,9 @@ public class ShpController {
 
     @RequestMapping(value = "importDirectoryByTableName", method = RequestMethod.GET)
     public List<ImportResultDTO> importDirectoryByTableName(@RequestParam String tableName, @RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
+        statusService.setBuisy(mode);
         List<ImportResultDTO> resultDTOList = new ArrayList<>();
         Charset charset = Charset.forName(kodowanie.getCharsetName());
-        statusService.setStatus(StatusEnum.BUSY);
         String filePath = resolveDirectoryPath(mode);
 
         List<String> fileNameList = shpService.shpListSorted(filePath);
@@ -183,7 +149,7 @@ public class ShpController {
 
         }
 //        LOGGER.info("Zakonczono wczytywanie plików");
-        statusService.setStatus(StatusEnum.FREE);
+        statusService.setFree();
         return resultDTOList;
     }
 

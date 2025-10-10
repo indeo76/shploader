@@ -3,8 +3,9 @@ package pl.wodnet.shploader.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.wodnet.shploader.enums.StatusEnum;
-import pl.wodnet.shploader.service.StatusService;
+import pl.wodnet.shploader.systemstatus.StatusDto;
+import pl.wodnet.shploader.systemstatus.StatusEnum;
+import pl.wodnet.shploader.systemstatus.StatusService;
 
 @RestController
 public class StatusController {
@@ -13,7 +14,7 @@ public class StatusController {
 
 
     @GetMapping(value = "/getStatus")
-    public StatusEnum getStatus(){
+    public StatusDto getStatus(){
         return statusService.getStatus();
     }
 

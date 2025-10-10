@@ -165,6 +165,8 @@ public class ShpController {
             filePath = Constants.SHP_GESUT_DIRECTORY;
         }else if(mode == ShpImportModeEnum.SWDE){
             filePath = Constants.SHP_SWDE_DIRECTORY;
+        } else if (mode == ShpImportModeEnum.SYTUACJA) {
+            filePath = Constants.SHP_SYTUACJA_DIRECTORY;
         }
 
         List<String> fileNameList = shpService.shpListSorted(filePath);

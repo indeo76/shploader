@@ -14,6 +14,7 @@ import javax.persistence.Table;
 @Table(name = "sytuacja", schema = "sytuacja7")
 @NoArgsConstructor
 public class SytuacjaEntity extends ObiektyBase{
+    private String xcode_n;
     private String xcode_d;
     private String mjs_n; //miejscowosc
     private String uli_n; //ulica
@@ -29,6 +30,7 @@ public class SytuacjaEntity extends ObiektyBase{
 
     public SytuacjaEntity(ShpEntity shp) {
         super(shp);
+        xcode_n = shp.getXCODE_N();
         xcode_d = shp.getXCODE_D();
         mjs_n = shp.getMJS_N();
         uli_n = shp.getULI_N();

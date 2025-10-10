@@ -10,6 +10,9 @@ public class Constants {
     public static String SHP_SWDE_DIRECTORY = System.getenv()
             .getOrDefault("SHP_SWDE_DIRECTORY", "/volume/swde");
 
+    public static String SHP_SYTUACJA_DIRECTORY = System.getenv()
+            .getOrDefault("SHP_SYTUACJA_DIRECTORY", "/volume/swde");
+
     public static String GEOINFO_KODY_FILE = System.getenv()
             .getOrDefault("GEOINFO_KODY_FILE", "/volume/conf/geoinfo_kody.json");
 

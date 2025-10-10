@@ -11,3 +11,4 @@ services:
       - "d:/projekty/shploader/shploader/deployment/conf:/volume/conf"
       - "d:/rozne/2025-wrzesnia/2025-09-shp/PWiK/SHAPE GESUT:/volume/gesut"
       - "d:/rozne/2025-wrzesnia/2025-09-shp/PWiK/shp_swde/nowe-cp1250:/volume/swde"
+      - "c:/Modul-mapy/shploader/shp/geoinfo_2024_10:/volume/sytuacja"

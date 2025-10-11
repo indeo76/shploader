@@ -37,6 +37,10 @@
       "tabela":"gesut7.dzialki",
       "tabela_old":null
    },
+   {
+      "kod_mnemoniczny":"wlasciciele",
+      "tabela":"gesut7.wlasciciele"
+   },
    {"kod_mnemoniczny":"GUPCPZ","tabela":"gesut7.co_armatura"},
 {"kod_mnemoniczny":"GUPCWB","tabela":"gesut7.co_armatura"},
 {"kod_mnemoniczny":"GUPCPI","tabela":"gesut7.co_armatura"},

@@ -26,9 +26,21 @@ export class ShpAnalizerComponent extends AbstractShpComponent<ShpReportRow>{
     super();
   }
 
-  analizuj(){
+  analizujGesut(){
+    this.analizuj('GESUT');
+  }
+
+  analizujSwde(){
+    this.analizuj('SWDE');
+  }
+
+  analizujSytuacja(){
+    this.analizuj('SYTUACJA');
+  }
+
+  private analizuj(mode: string){
     this.isAnalizeRunning = true;
-    this.service.analizuj()
+    this.service.analizuj(mode)
       .subscribe(result => {
         this.shpReport = result;
         this.rowsFiltered = this.shpReport.rows;

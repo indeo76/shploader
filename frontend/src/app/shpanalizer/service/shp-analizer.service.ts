@@ -7,12 +7,12 @@ import {ShpReport} from '../model/ShpReport';
   providedIn: 'root'
 })
 export class ShpAnalizerService {
-  private path: string = 'http://localhost:8090/shploader/shpanalizer/analizuj';
+  private path: string = 'http://localhost:8095/shploader/shpanalizer/analizuj';
 
   constructor(private http: HttpClient) { }
 
-  analizuj(): Observable<ShpReport> {
-    return this.http.get<ShpReport>(this.path);
+  analizuj(mode: string): Observable<ShpReport> {
+    return this.http.get<ShpReport>(this.path + '?mode=' + mode);
   }
 
 }

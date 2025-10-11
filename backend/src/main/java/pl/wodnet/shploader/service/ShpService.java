@@ -34,6 +34,7 @@ import pl.wodnet.shploader.entity.gesut7.*;
 import pl.wodnet.shploader.entity.swde.BudynekEntity;
 import pl.wodnet.shploader.entity.swde.DzialkaEntity;
 import pl.wodnet.shploader.entity.swde.ObrebEntity;
+import pl.wodnet.shploader.entity.swde.WlascicielEntity;
 import pl.wodnet.shploader.enums.FeatureError;
 import pl.wodnet.shploader.enums.ShpImportModeEnum;
 import pl.wodnet.shploader.repository.ShpRepository;
@@ -111,7 +112,7 @@ public class ShpService {
             geometriesCount = complexGeometry.getNumGeometries();
             if(splitComplexGeom){
                 if(geometriesCount > 1){
-                    LOGGER.warn(String.format("Plik: %s Liczba geometrii > 1: %s, %s: %s", file.getName(),geometriesCount, key, feature.getProperty(key).getValue()));
+//                    LOGGER.warn(String.format("Plik: %s Liczba geometrii > 1: %s, %s: %s", file.getName(),geometriesCount, key, feature.getProperty(key).getValue()));
                 }else if(geometriesCount ==0){
                     LOGGER.info("Liczba geometrii: " + geometriesCount);
                 }
@@ -262,6 +263,7 @@ public class ShpService {
             tablesList.add(Constants.OBREBY);
             tablesList.add(Constants.BUDYNKI);
             tablesList.add(Constants.DZIALKI);
+            tablesList.add(Constants.WLASCICIELE);
         }else if(mode == ShpImportModeEnum.SYTUACJA){
             tablesList.add(Constants.SYTUACJA);
         }
@@ -439,9 +441,12 @@ public class ShpService {
         }else if (shpEntity.getTableName().contains(Constants.DZIALKI)){
             DzialkaEntity dzialkaEntity = new DzialkaEntity(shpEntity);
             em.persist(dzialkaEntity);
-        }else if(shpEntity.getTableName().contains(Constants.BUDYNKI)){
+        }else if(shpEntity.getTableName().contains(Constants.BUDYNKI)) {
             BudynekEntity budynekEntity = new BudynekEntity(shpEntity);
             em.persist(budynekEntity);
+        } else if (shpEntity.getTableName().contains(Constants.WLASCICIELE)) {
+            WlascicielEntity wlascicielEntity = new WlascicielEntity(shpEntity);
+            em.persist(wlascicielEntity);
         } else if (shpEntity.getTableName().contains(Constants.INNE_ARMATURA)) {
             InneArmaturaEntity entity = new InneArmaturaEntity(shpEntity);
             em.persist(entity);

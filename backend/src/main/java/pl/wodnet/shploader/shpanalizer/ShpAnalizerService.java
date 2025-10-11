@@ -9,11 +9,9 @@ import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.GeometryType;
-import org.opengis.feature.type.PropertyType;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pl.wodnet.shploader.dto.GeoinfoKodyDTO;
-import pl.wodnet.shploader.dto.ImportResultDTO;
 import pl.wodnet.shploader.service.ConfService;
 import pl.wodnet.shploader.service.ShpService;
 
@@ -86,8 +84,8 @@ public class ShpAnalizerService {
     }
 
     private List<ShpReportRow> analizujFeature(SimpleFeature feature, List<ShpReportRow> rows, List<GeoinfoKodyDTO> kody, String fileName) {
-        String kodNowy = (String) feature.getProperty("XCODE_N").getValue();
-        String kodMnemoniczny = (String) feature.getProperty("DKP_N").getValue();
+        String kodNowy = getFeatureStringValue(feature, "XCODE_N");
+        String kodMnemoniczny = getFeatureStringValue(feature, "DKP_N");
 
         Map<String, String> properties = new HashMap<>();
         Map<String, String> propertyTypes = new HashMap<>();
@@ -104,15 +102,15 @@ public class ShpAnalizerService {
             ShpReportRow row = new ShpReportRow();
             row.setFileName(fileName);
             row.setKodNowy(kodNowy);
-            row.setDKP_N((String) feature.getProperty("DKP_N").getValue());
-            row.setDKP_D((String) feature.getProperty("DKP_D").getValue());
-            row.setGNAME((String) feature.getProperty("GNAME").getValue());
-            row.setGVALUE((String) feature.getProperty("GVALUE").getValue());
+            row.setDKP_N(getFeatureStringValue(feature, "DKP_N"));
+            row.setDKP_D(getFeatureStringValue(feature, "DKP_D"));
+            row.setGNAME(getFeatureStringValue(feature, "GNAME"));
+            row.setGVALUE(getFeatureStringValue(feature, "GVALUE"));
 
             row.setKodStary(kodMnemoniczny);
-            row.setXCODE_C((Integer) feature.getProperty("XCODE_C").getValue());
-            row.setXCODE_D((String) feature.getProperty("XCODE_D").getValue());
-            row.setXCODE_N((String) feature.getProperty("XCODE_N").getValue());
+            row.setXCODE_C(getFeatureIntegerValue(feature, "XCODE_C"));
+            row.setXCODE_D(getFeatureStringValue(feature, "XCODE_D"));
+            row.setXCODE_N(getFeatureStringValue(feature, "XCODE_N"));
             row.setRodzajGeometrii(geometryType.getName().toString());
 
             row.setProperties(getFeatureProperties(feature));
@@ -149,4 +147,21 @@ public class ShpAnalizerService {
         }
         return globalProperties;
     }
+
+    private String getFeatureStringValue(SimpleFeature feature, String propertyName) {
+        return Optional.ofNullable(feature.getProperty(propertyName))
+                .map(Property::getValue)
+                .map(Object::toString)
+                .orElse(null);
+    }
+
+    private Integer getFeatureIntegerValue(SimpleFeature feature, String propertyName) {
+        return Optional.ofNullable(feature.getProperty(propertyName))
+                .map(Property::getValue)
+                .filter(val -> val instanceof Number)
+                .map(val -> ((Number) val).intValue())
+                .orElse(null);
+    }
+
+
 }

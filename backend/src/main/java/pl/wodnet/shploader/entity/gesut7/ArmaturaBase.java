@@ -12,8 +12,8 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 @NoArgsConstructor
 public abstract class ArmaturaBase extends GesutBaseEntity {
-    private Double rz_dna;
-    private Double rz_terenu;
+    private Float rz_dna;
+    private Float rz_terenu;
 
     public ArmaturaBase(ShpEntity shp) {
         super(shp);

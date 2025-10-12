@@ -30,14 +30,14 @@ public abstract class GesutBaseEntity {
     private String nr_modgik;
     private String obreb;
     private String identyfikator;
-    private Integer	version;
+    private Double	version;
     private String kerg;
     private String adres;
     private String dzialka; // todo
     private String creation_date;
     private String modification_date;
     private String g7;
-    private Integer	status;
+    private Double status;
     private String material;
     private String stan;
     private String g7_opis;
@@ -63,6 +63,17 @@ public abstract class GesutBaseEntity {
         dzialka = shp.getNDZ();
         g7_opis = shp.getXCODE_D(); //todo - tutaj bierze nowy kod!!!!
         this.assignGNAMEFields(shp);
+    }
+
+    public Boolean hasValidGeom(ShpEntity shpEntity) {
+        if(shpEntity.getFeatureGeomType().contains("Point") && shpEntity.getTableName().contains("armatura")){
+            return true;
+        } else if(shpEntity.getFeatureGeomType().contains("Line") && shpEntity.getTableName().contains("sieci")) {
+            return true;
+        } else if (shpEntity.getFeatureGeomType().contains("Polygon") && shpEntity.getTableName().contains("obiekty")) {
+            return true;
+        }
+        return false;
     }
 
     /**

@@ -1,5 +1,6 @@
 package pl.wodnet.shploader.service;
 
+import org.geolatte.geom.GeometryType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.wodnet.shploader.Constants;
@@ -36,7 +37,11 @@ public class ShpService extends AbstractShpService<ShpEntity> {
             em.persist(wodObiekty);
         }else if(shpEntity.getTableName().contains(Constants.KAN_ARMATURA)){
             KanArmaturaEntity kanArmatura = new KanArmaturaEntity(shpEntity);
-            em.persist(kanArmatura);
+            if(shpEntity.getFeatureGeomType().contains("Point")){
+                em.persist(kanArmatura);
+            } else {
+                LOGGER.warn(String.format("Niezgodnosc geometrii obiektu plik: %s, kod: %s %s %s", shpEntity.getPlik(), shpEntity.getKod(), shpEntity.getTableName(), shpEntity.getGeom().getGeometryType()));
+            }
         }else if(shpEntity.getTableName().contains(Constants.KAN_SIECI)){
             KanSieciEntity kanSieci = new KanSieciEntity(shpEntity);
             em.persist(kanSieci);
@@ -66,7 +71,11 @@ public class ShpService extends AbstractShpService<ShpEntity> {
             em.persist(telSieci);
         }else if(shpEntity.getTableName().contains(Constants.TEL_ARMATURA)) {
             TelArmaturaEntity telArmatura = new TelArmaturaEntity(shpEntity);
-            em.persist(telArmatura);
+            if(shpEntity.getFeatureGeomType().contains("Point")){
+                em.persist(telArmatura);
+            } else {
+                LOGGER.warn(String.format("Niezgodnosc geometrii obiektu plik: %s, kod: %s %s %s", shpEntity.getPlik(), shpEntity.getKod(), shpEntity.getTableName(), shpEntity.getGeom().getGeometryType()));
+            }
         }else if(shpEntity.getTableName().contains(Constants.TEL_OBIEKTY)) {
             TelObiektyEntity telObiekty = new TelObiektyEntity(shpEntity);
             em.persist(telObiekty);
@@ -93,10 +102,18 @@ public class ShpService extends AbstractShpService<ShpEntity> {
             em.persist(entity);
         } else if (shpEntity.getTableName().contains(Constants.INNE_SIECI)) {
             InneSieciEntity entity = new InneSieciEntity(shpEntity);
-            em.persist(entity);
+            if(entity.hasValidGeom(shpEntity)){
+                em.persist(entity);
+            } else {
+                LOGGER.warn(String.format("Niezgodnosc geometrii obiektu plik: %s, kod: %s %s %s", shpEntity.getPlik(), shpEntity.getKod(), shpEntity.getTableName(), shpEntity.getGeom().getGeometryType()));
+            }
         } else if (shpEntity.getTableName().contains(Constants.INNE_OBIEKTY)) {
             InneObiektyEntity entity = new InneObiektyEntity(shpEntity);
-            em.persist(entity);
+            if(entity.hasValidGeom(shpEntity)){
+                em.persist(entity);
+            } else {
+                LOGGER.warn(String.format("Niezgodnosc geometrii obiektu plik: %s, kod: %s %s %s", shpEntity.getPlik(), shpEntity.getKod(), shpEntity.getTableName(), shpEntity.getGeom().getGeometryType()));
+            }
         }
     }
 

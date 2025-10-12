@@ -45,6 +45,9 @@ public class ShpBaseEntity {
     @Column(name = "the_geom", columnDefinition = "GEOMETRY")
     private Geometry geom;
 
+    @Column(name = "feature_geom_type")
+    private String featureGeomType;
+
     @Column(name = "kod")
     private String kod;
 
@@ -106,12 +109,12 @@ public class ShpBaseEntity {
     private java.lang.String ROP_N;
     private java.lang.String ROS_D;
     private java.lang.String ROS_N;
-    private java.lang.Double RZD;
-    private java.lang.Double RZG;
+    private java.lang.Float RZD;
+    private java.lang.Float RZG;
     private java.lang.Double SRU; //kolizja typu Double/Integer
     private java.lang.Double SSN; //srednica nominalna
-    private java.lang.Double SSW; // srednica ww
-    private java.lang.Double SSZ; //srednica zewn
+    private java.lang.Float SSW; // srednica ww
+    private java.lang.Float SSZ; //srednica zewn
     private String STP_N;
     private java.lang.String STO_D;
     private java.lang.String STO_N;
@@ -147,7 +150,7 @@ public class ShpBaseEntity {
     private java.lang.String XIDIIP_LO1;
     private java.lang.String XIDIIP_NA1;
     private java.lang.Double XL;
-    private java.lang.Double XLENGTH;
+    private java.lang.Float XLENGTH;
     private java.lang.String XMODIFICA1;
     private java.lang.String XNUMBER;
     private java.lang.String XREMARKS;
@@ -164,11 +167,11 @@ public class ShpBaseEntity {
     private java.lang.String XS_WOJEWO1; //XS_WOJEWÓ1
     private java.lang.String XS_WOJEWO2; //XS_WOJEWÓ2
     private java.lang.String XSRC_VERS1;
-    private java.lang.Integer XSTATUS;
+    private java.lang.Double XSTATUS;
     private java.lang.String XUSER_DES1;
     private java.lang.String XUSER_IDE1;
     private java.lang.String XUSER_NAME;
-    private java.lang.Integer XVERSION_1;
+    private java.lang.Double XVERSION_1;
     private java.lang.String NDZ; //dzialka
     private Double XX;
     private Double XY;

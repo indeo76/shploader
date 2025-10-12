@@ -12,10 +12,10 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 @NoArgsConstructor
 public abstract class ObiektyBase extends GesutBaseEntity{
-    private Double rz_dna;
-    private Double rz_terenu;
-    private Double srednic_ww;
-    private Double srednic_zw;
+    private Float rz_dna;
+    private Float rz_terenu;
+    private Float srednic_ww;
+    private Float srednic_zw;
     private String funkcja;
     private String funkcja_n;
     public ObiektyBase(ShpEntity shp) {

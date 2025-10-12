@@ -26,4 +26,8 @@ public class ShpSwdeEntity extends ShpBaseEntity{
     private String LICZBAKONP;
     private String OFU;
 
+    private String NAZWAMIEJS;
+    private String NAZWAULICY;
+    private String NUMERPORZA;
+
 }

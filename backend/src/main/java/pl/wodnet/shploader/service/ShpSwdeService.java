@@ -36,6 +36,9 @@ public class ShpSwdeService extends AbstractShpService<ShpSwdeEntity> {
         } else if(shpEntity.getTableName().contains(Constants.UZYTKI)){
             UzytekEntity uzytekEntity = new UzytekEntity(shpEntity);
             em.persist(uzytekEntity);
+        } else if(shpEntity.getTableName().contains(Constants.ADRESY)){
+            AdresEntity adresEntity = new AdresEntity(shpEntity);
+            em.persist(adresEntity);
         }
     }
 }

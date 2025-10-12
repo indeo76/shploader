@@ -1,7 +1,5 @@
 package pl.wodnet.shploader;
 
-import java.nio.file.Paths;
-
 public class Constants {
 
     public static String SHP_GESUT_DIRECTORY = System.getenv()
@@ -55,6 +53,7 @@ public class Constants {
     public static final String DZIALKI = "dzialki";
     public static final String WLASCICIELE = "wlasciciele";
     public static final String UZYTKI = "uzytki";
+    public static final String ADRESY = "adresy";
 
 
 }

@@ -186,6 +186,7 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
 
                 KodResult kodResult = null;
                 Entity shpEntity = getEntity();
+                shpEntity.setFeatureGeomType(geometryType.getName().toString());
                 if(g.getNumGeometries() > 1){
                     shpEntity.setMultiGeometry(true);
                 } else {
@@ -215,10 +216,13 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
 //                                shpEntity.setGeom(GeometryExtractor.extractGeometry(feature));
                 //shpEntity.setPropertyTypes(propertyTypes);
                 //shpEntity.setProperties(properties);
-                em.persist(shpEntity);
+                try {
+                    em.persist(shpEntity);
+                } catch (Exception ex) {
+                    LOGGER.error("Nie mozna wykonac em.persist(shpEntity)", ex);
+                }
                 if(shpEntity.getTableName() !=null){
                     processShpEntity(em, shpEntity);
-//                        LOGGER.info(String.format("Zapisano obiekt w tabeli %s, kod stary: %s, kod nowy: %s", shpEntity.getTableName(), shpEntity.getDKP_N(), shpEntity.getXCODE_N()));
                 }
                 entityList.add(shpEntity);
                 iGeomObjects = iGeomObjects + 1;
@@ -334,6 +338,7 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
             tablesList.add(Constants.DZIALKI);
             tablesList.add(Constants.WLASCICIELE);
             tablesList.add(Constants.UZYTKI);
+            tablesList.add(Constants.ADRESY);
         }else if(mode == ShpImportModeEnum.SYTUACJA){
             tablesList.add(Constants.SYTUACJA);
         }

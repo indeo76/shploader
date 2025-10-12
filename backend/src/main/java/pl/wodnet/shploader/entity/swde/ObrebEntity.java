@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.wodnet.shploader.Constants;
 import pl.wodnet.shploader.entity.ShpEntity;
+import pl.wodnet.shploader.entity.ShpSwdeEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -16,7 +17,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 public class ObrebEntity extends SWDEBaseEntity{
     private String g5naz;
-    public ObrebEntity(ShpEntity shpEntity) {
+    public ObrebEntity(ShpSwdeEntity shpEntity) {
         super(shpEntity);
 //        this.setTableName(Constants.OBREBY);
         this.g5naz = shpEntity.getNAZWAWLASN();

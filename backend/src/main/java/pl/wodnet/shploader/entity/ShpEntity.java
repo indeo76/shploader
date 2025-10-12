@@ -10,42 +10,8 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@Table(name = "shp")
+@Table(name = "shp_gesut", schema = "shp")
 public class ShpEntity extends ShpBaseEntity{
-    @Column(name = "shp_root")
-    @Enumerated(EnumType.STRING)
-    private SHPRoot root;
-
-    @Column(name = "shp_geom_type")
-    @Enumerated(EnumType.STRING)
-    private SHPGeomType geomType;
-
-    @Column(name = "shp_branza")
-    @Enumerated(EnumType.STRING)
-    private SHPBranza branza;
-
-    @Column(name = "shp_object_type")
-    @Enumerated(EnumType.STRING)
-    private SHPObjectType obiektType;
-
-    private String typ;
-    private String tableName;
-    @Column(name = "the_geom", columnDefinition = "GEOMETRY")
-    private Geometry geom;
-
-    @Column(name = "kod")
-    private String kod;
-
-    @Column(name = "kod_provider")
-    @Enumerated(EnumType.STRING)
-    private KodProvider kodProvider;
-
-    @Column(name = "target_table_provider")
-    @Enumerated(EnumType.STRING)
-    private TargetTableProvider targetTableProvider;
-
-    @Column(name = "multi_geom")
-    private Boolean multiGeometry;
 
 //    @ElementCollection
 //    @CollectionTable(name = "property_map", joinColumns = @JoinColumn(name = "id_shp"))

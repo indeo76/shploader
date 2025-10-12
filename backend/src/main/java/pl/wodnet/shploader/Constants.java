@@ -54,5 +54,7 @@ public class Constants {
     public static final String BUDYNKI = "budynki";
     public static final String DZIALKI = "dzialki";
     public static final String WLASCICIELE = "wlasciciele";
+    public static final String UZYTKI = "uzytki";
+
 
 }

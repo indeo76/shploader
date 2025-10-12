@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.wodnet.shploader.Constants;
 import pl.wodnet.shploader.entity.ShpEntity;
+import pl.wodnet.shploader.entity.ShpSwdeEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -18,7 +19,7 @@ public class DzialkaEntity extends SWDEBaseEntity {
     private String obreb;
     private String numer;
 
-    public DzialkaEntity(ShpEntity shpEntity) {
+    public DzialkaEntity(ShpSwdeEntity shpEntity) {
         super(shpEntity);
         this.obreb = shpEntity.getOBREB();
         this.numer = resolveNumerDzialki(shpEntity.getIDDZIALKI());

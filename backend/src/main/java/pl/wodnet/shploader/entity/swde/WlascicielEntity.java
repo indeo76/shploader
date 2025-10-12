@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import pl.wodnet.shploader.Constants;
 import pl.wodnet.shploader.entity.ShpEntity;
+import pl.wodnet.shploader.entity.ShpSwdeEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -15,21 +16,22 @@ import javax.persistence.Table;
 public class WlascicielEntity extends SWDEBaseEntity {
     private String numer; //nr dzialki
     private String obreb; //Września
-    private String identyfikator; //numer dzialki z katastrem
     private String typ; //właściciel
     private String nazwa; //nazwa
     private String adres; //adres
     private String dokumkenty; //KW 6375
+    private String udzial;
+    private String gmina;
 
-    public WlascicielEntity(ShpEntity shpEntity) {
+    public WlascicielEntity(ShpSwdeEntity shpEntity) {
         super(shpEntity);
-        //przypisz to:
-//        private String numer;
+        numer = shpEntity.getNR_DZ();
         obreb = shpEntity.getOBREB();
-//        private String identyfikator;
-//        private String typ;
-//        private String nazwa;
-//        private String adres;
-//        dokumkenty = shpEntity.get;
+        typ = shpEntity.getTYP();
+        nazwa = shpEntity.getNAZWA();
+        adres = shpEntity.getADRES();
+        dokumkenty = shpEntity.getKW();
+        udzial = shpEntity.getUDZIAL();
+        gmina = shpEntity.getGMINA();
     }
 }

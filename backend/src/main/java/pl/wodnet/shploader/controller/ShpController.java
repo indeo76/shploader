@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.wodnet.shploader.*;
 import pl.wodnet.shploader.dto.GeoinfoKodyDTO;
 import pl.wodnet.shploader.dto.ImportResultDTO;
+import pl.wodnet.shploader.entity.ShpBaseEntity;
 import pl.wodnet.shploader.enums.CharsetEnum;
 import pl.wodnet.shploader.enums.ShpImportModeEnum;
 import pl.wodnet.shploader.systemstatus.StatusEnum;
@@ -29,8 +30,19 @@ public class ShpController {
     @Autowired
     RestartService restartService;
 
+    AbstractShpService<?> service;
+
     @Autowired
-    ShpService shpService;
+    ShpService shpGesutService;
+
+    @Autowired
+    ShpSwdeService shpSwdeService;
+
+    @Autowired
+    ShpSytuacjaService  shpSytuacjaService;
+
+//    @Autowired
+//    ShpSytuacjaService shpSytuacjaService;
 
     @Autowired
     WodArmaturaService wodArmaturaService;
@@ -67,16 +79,17 @@ public class ShpController {
     @RequestMapping(value = "/importDirectory", method = RequestMethod.GET)
     public String importDirectory(@RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
         statusService.setBuisy(mode);
+        service = getService(mode);
         Charset charset = Charset.forName(kodowanie.getCharsetName());
         String filePath = resolveDirectoryPath(mode);
-        List<String> tablesList = shpService.prepareTableListForMode(mode);
-        shpService.truncateTables(tablesList, getSchemaOfMode(mode));
-        shpService.truncateTables(Arrays.asList(new String[]{"shp"}), "shp");
-        List<String> fileNameList = shpService.shpListSorted(filePath); //fileNameListSorted( filePath, "shp");
+        List<String> tablesList = service.prepareTableListForMode(mode);
+        service.truncateTables(tablesList, getSchemaOfMode(mode));
+        service.truncateTables(Arrays.asList(new String[]{"shp"}), "shp");
+        List<String> fileNameList = service.shpListSorted(filePath); //fileNameListSorted( filePath, "shp");
         List<GeoinfoKodyDTO> geoinfoKodyDTOList = confService.importGeoinfoKody();
         for(String fileName : fileNameList){
             try {
-                shpService.importFile(Paths.get(filePath, fileName).toString(), geoinfoKodyDTOList, charset, splitComplexGeom);
+                service.importFile(Paths.get(filePath, fileName).toString(), geoinfoKodyDTOList, charset, splitComplexGeom);
             } catch (IOException e) {
                 LOGGER.error(String.format("Wystapil blad: %s", e.getMessage()));
                 throw new RuntimeException(e);
@@ -90,9 +103,10 @@ public class ShpController {
     @RequestMapping(value = "/importDeclaredTables", method = RequestMethod.GET)
     public List<ImportResultDTO> importDeclaredTables(@RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
         statusService.setBuisy(mode);
+        service = getService(mode);
         List<ImportResultDTO> resultDTOList = new ArrayList<>();
-        List<String> tablesList = shpService.prepareTableListForMode(mode);
-        shpService.truncateTables(tablesList, getSchemaOfMode(mode));
+        List<String> tablesList = service.prepareTableListForMode(mode);
+        service.truncateTables(tablesList, getSchemaOfMode(mode));
         for(String tableName: tablesList){
             resultDTOList.addAll(importDirectoryByTableName(tableName, mode, kodowanie, splitComplexGeom));
 //            LayerDTO layerDTO = new LayerDTO(tableName, count);
@@ -102,6 +116,18 @@ public class ShpController {
         LOGGER.info("Zakonczono wczytywanie plików");
         statusService.setFree();
         return resultDTOList;
+    }
+
+    private AbstractShpService<?> getService(ShpImportModeEnum mode) {
+        switch (mode){
+            case GESUT:
+                return shpGesutService;
+            case SWDE:
+                return shpSwdeService;
+            case SYTUACJA:
+                return shpSytuacjaService;
+        }
+        return null;
     }
 
     private String getSchemaOfMode(ShpImportModeEnum mode) {
@@ -125,21 +151,22 @@ public class ShpController {
     @RequestMapping(value = "importDirectoryByTableName", method = RequestMethod.GET)
     public List<ImportResultDTO> importDirectoryByTableName(@RequestParam String tableName, @RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
         statusService.setBuisy(mode);
+        service = getService(mode);
         List<ImportResultDTO> resultDTOList = new ArrayList<>();
         Charset charset = Charset.forName(kodowanie.getCharsetName());
         String filePath = resolveDirectoryPath(mode);
 
-        List<String> fileNameList = shpService.shpListSorted(filePath);
+        List<String> fileNameList = service.shpListSorted(filePath);
         List<GeoinfoKodyDTO> geoinfoKodyDTOList = confService.importGeoinfoKody();
         List<String> kodyMnemoniczneList = confService.getFileListByTableName(tableName, geoinfoKodyDTOList);
         List<String> tablesList = new ArrayList<>();
         tablesList.add(tableName);
-        shpService.truncateTables(tablesList, getSchemaOfMode(mode));
+        service.truncateTables(tablesList, getSchemaOfMode(mode));
         for(String fileName : fileNameList){
             for(String kodMnemoniczny: kodyMnemoniczneList){
                 if(fileName.contains(kodBezGwiazdgki(kodMnemoniczny))){
                     try {
-                        resultDTOList.add(shpService.importFile(Paths.get(filePath, fileName).toString(), geoinfoKodyDTOList, charset, splitComplexGeom));
+                        resultDTOList.add(service.importFile(Paths.get(filePath, fileName).toString(), geoinfoKodyDTOList, charset, splitComplexGeom));
                     } catch (IOException e) {
                         LOGGER.error(String.format("Wystapil blad: %s", e.getMessage()));
                         throw new RuntimeException(e);
@@ -150,6 +177,7 @@ public class ShpController {
         }
 //        LOGGER.info("Zakonczono wczytywanie plików");
         statusService.setFree();
+        LOGGER.info("Zakonczono wczytywanie plików");
         return resultDTOList;
     }
 
@@ -167,9 +195,10 @@ public class ShpController {
 
     @RequestMapping(value = "checkNotRecognizedFiles", method = RequestMethod.GET)
     public List<ImportResultDTO> checkNotRecognizedFiles(@RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie) throws IOException {
+        service = getService(mode);
         Charset charset = Charset.forName(kodowanie.getCharsetName());
         String filePath = Constants.SHP_GESUT_DIRECTORY; //todo TYLKO gesut DIRECTORY
-        List<String> fileNameList = shpService.shpListSorted(filePath);
+        List<String> fileNameList = service.shpListSorted(filePath);
         List<GeoinfoKodyDTO> geoinfoKodyDTOList = confService.importGeoinfoKody();
         List<ImportResultDTO> nieznanyPlik = new ArrayList<>();
         for(String fileName : fileNameList){
@@ -180,7 +209,7 @@ public class ShpController {
                 }
             }
             if(!contains){
-                nieznanyPlik.add(shpService.getShpInfo(Paths.get(filePath, fileName).toFile()));
+                nieznanyPlik.add(service.getShpInfo(Paths.get(filePath, fileName).toFile()));
             }
         }
         return nieznanyPlik;

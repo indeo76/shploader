@@ -13,7 +13,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Table(name = "inne_sieci", schema = "gesut7", indexes = {
-        @Index(columnList = "identyfikator", name = "identyfikator_kan_sieci_idx"),
+        @Index(columnList = "identyfikator", name = "identyfikator_inne_sieci_idx"),
         @Index(columnList = "g7", name = "g7_inne_sieci_idx"),
         @Index(columnList = "status", name = "status_inne_sieci_idx")})
 @NoArgsConstructor

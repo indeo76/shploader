@@ -1,9 +1,10 @@
-package pl.wodnet.shploader.entity.gesut7;
+package pl.wodnet.shploader.entity.sytuacja;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pl.wodnet.shploader.entity.ShpEntity;
+import pl.wodnet.shploader.entity.ShpSytuacjaEntity;
+import pl.wodnet.shploader.entity.gesut7.ObiektyBase;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -13,7 +14,7 @@ import javax.persistence.Table;
 @Setter
 @Table(name = "sytuacja", schema = "sytuacja7")
 @NoArgsConstructor
-public class SytuacjaEntity extends ObiektyBase{
+public class SytuacjaEntity extends SytuacjaBaseEntity {
     private String xcode_n;
     private String xcode_d;
     private String mjs_n; //miejscowosc
@@ -28,7 +29,7 @@ public class SytuacjaEntity extends ObiektyBase{
     private String txt;
     private String bud;
 
-    public SytuacjaEntity(ShpEntity shp) {
+    public SytuacjaEntity(ShpSytuacjaEntity shp) {
         super(shp);
         xcode_n = shp.getXCODE_N();
         xcode_d = shp.getXCODE_D();

@@ -2,6 +2,8 @@ package pl.wodnet.shploader.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.locationtech.jts.geom.Geometry;
+import pl.wodnet.shploader.service.classification.*;
 
 import javax.persistence.*;
 import java.io.File;
@@ -21,6 +23,41 @@ public class ShpBaseEntity {
 
     @Column(name = "plik_modification_date")
     private String plikModificationDate;
+
+    @Column(name = "shp_root")
+    @Enumerated(EnumType.STRING)
+    private SHPRoot root;
+
+    @Column(name = "shp_geom_type")
+    @Enumerated(EnumType.STRING)
+    private SHPGeomType geomType;
+
+    @Column(name = "shp_branza")
+    @Enumerated(EnumType.STRING)
+    private SHPBranza branza;
+
+    @Column(name = "shp_object_type")
+    @Enumerated(EnumType.STRING)
+    private SHPObjectType obiektType;
+
+//    private String typ;
+    private String tableName;
+    @Column(name = "the_geom", columnDefinition = "GEOMETRY")
+    private Geometry geom;
+
+    @Column(name = "kod")
+    private String kod;
+
+    @Column(name = "kod_provider")
+    @Enumerated(EnumType.STRING)
+    private KodProvider kodProvider;
+
+    @Column(name = "target_table_provider")
+    @Enumerated(EnumType.STRING)
+    private TargetTableProvider targetTableProvider;
+
+    @Column(name = "multi_geom")
+    private Boolean multiGeometry;
 
     private java.lang.String BLP_D;
     private java.lang.String BLP_N;
@@ -190,6 +227,9 @@ public class ShpBaseEntity {
     private String GRKO_N;
     private String TXT;
     private String BUD;
+
+    public ShpBaseEntity() {
+    }
 
     /**
      * Buduje mapę key->value na podstawie pól GNAME i GVALUE

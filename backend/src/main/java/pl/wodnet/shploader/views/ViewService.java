@@ -30,7 +30,7 @@ public class ViewService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewService.class);
 
 
-    @PostConstruct
+//    @PostConstruct
     public void createViews() {
 
         LOGGER.info("Rozpoczeto wgrywanie skryptu modyfikującego widoki");

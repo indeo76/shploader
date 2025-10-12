@@ -1,11 +1,10 @@
-package pl.wodnet.shploader.entity.swde;
+package pl.wodnet.shploader.entity.sytuacja;
 
-import org.locationtech.jts.geom.Geometry;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.locationtech.jts.geom.Geometry;
 import pl.wodnet.shploader.entity.ShpBaseEntity;
-import pl.wodnet.shploader.entity.ShpEntity;
 
 import javax.persistence.*;
 
@@ -13,7 +12,7 @@ import javax.persistence.*;
 @Setter
 @MappedSuperclass
 @NoArgsConstructor
-public abstract class SWDEBaseEntity {
+public class SytuacjaBaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long gid;
@@ -21,7 +20,7 @@ public abstract class SWDEBaseEntity {
     @Column(name = "the_geom", columnDefinition = "GEOMETRY")
     private Geometry geom;
 
-    public SWDEBaseEntity(ShpBaseEntity shpEntity) {
+    public SytuacjaBaseEntity(ShpBaseEntity shpEntity) {
         this.geom = shpEntity.getGeom();
     }
 }

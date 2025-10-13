@@ -24,6 +24,6 @@ public class CoSieciEntity extends SieciBase{
     private String g7_eco_opi;
     public CoSieciEntity(ShpEntity shp) {
         super(shp);
-        g7_eco_opi = shp.getXCODE_D();
+        g7_eco_opi = getG7_opis();
     }
 }

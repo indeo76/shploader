@@ -24,6 +24,6 @@ public class GazSieciEntity extends SieciBase{
     private String g7_gaz_opi;
     public GazSieciEntity(ShpEntity shp) {
         super(shp);
-        g7_gaz_opi = shp.getXCODE_D();
+        g7_gaz_opi = getG7_opis();
     }
 }

@@ -23,6 +23,6 @@ public class TelArmaturaEntity extends ArmaturaBase {
     private String g7_tel_opi;
     public TelArmaturaEntity(ShpEntity shp) {
         super(shp);
-        g7_tel_opi = shp.getXCODE_N();
+        g7_tel_opi = getG7_opis();
     }
 }

@@ -21,6 +21,6 @@ public class EngObiektyEntity extends ObiektyBase {
     private String g7_pro_opi;
     public EngObiektyEntity(ShpEntity shp) {
         super(shp);
-        g7_pro_opi = shp.getXCODE_D();
+        g7_pro_opi = getG7_opis();
     }
 }

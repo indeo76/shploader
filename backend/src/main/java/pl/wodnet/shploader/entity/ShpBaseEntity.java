@@ -55,6 +55,10 @@ public class ShpBaseEntity {
     @Enumerated(EnumType.STRING)
     private KodProvider kodProvider;
 
+    @Column(name = "g7_opis_provider")
+    @Enumerated(EnumType.STRING)
+    private G7OpisProvider g7OpisProvider;
+
     @Column(name = "target_table_provider")
     @Enumerated(EnumType.STRING)
     private TargetTableProvider targetTableProvider;

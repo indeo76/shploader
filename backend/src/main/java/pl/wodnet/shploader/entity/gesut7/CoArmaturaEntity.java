@@ -22,6 +22,6 @@ public class CoArmaturaEntity extends ArmaturaBase {
     private String g7_eco_opi;
     public CoArmaturaEntity(ShpEntity shp) {
         super(shp);
-        g7_eco_opi = shp.getXCODE_D();
+        g7_eco_opi = getG7_opis();
     }
 }

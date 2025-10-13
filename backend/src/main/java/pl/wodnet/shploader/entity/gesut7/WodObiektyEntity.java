@@ -22,6 +22,6 @@ public class WodObiektyEntity extends ObiektyBase{
 
     public WodObiektyEntity(ShpEntity shp) {
         super(shp);
-        g7_wod_opi = shp.getXCODE_D();
+        g7_wod_opi = getG7_opis();
     }
 }

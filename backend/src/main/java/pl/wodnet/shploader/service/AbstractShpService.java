@@ -39,10 +39,7 @@ import pl.wodnet.shploader.entity.swde.ObrebEntity;
 import pl.wodnet.shploader.entity.swde.WlascicielEntity;
 import pl.wodnet.shploader.enums.FeatureError;
 import pl.wodnet.shploader.enums.ShpImportModeEnum;
-import pl.wodnet.shploader.service.classification.IClassificationProvider;
-import pl.wodnet.shploader.service.classification.KodProvider;
-import pl.wodnet.shploader.service.classification.KodResult;
-import pl.wodnet.shploader.service.classification.TargetTableResult;
+import pl.wodnet.shploader.service.classification.*;
 import pl.wodnet.shploader.systemstatus.StatusService;
 import pl.wodnet.shploader.tools.Tools;
 
@@ -196,7 +193,7 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
                 shpEntity.setPlikModificationDate(file);
                 kodResult = findKodMnemoniczny(shpEntity, properties, propertyTypes, propertyList);
                 if(kodResult==null){
-                    kodResult = new KodResult(Tools.getNameWithoutExtension(file.getName()), KodProvider.NAZWA_PLIKU);
+                    kodResult = new KodResult(Tools.getNameWithoutExtension(file.getName()), KodProvider.NAZWA_PLIKU, G7OpisProvider.XCODE_D);
                 }
                 TargetTableResult targetTableResult = confService.findTargetTable(kodResult.getKod(), geoinfoKodyDTOList);// todo tu ma trafic chyba stary kod nie nowy
                 shpEntity.setKod(kodResult.getKod());
@@ -353,21 +350,21 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
             propNowyKod = propertyList.stream().filter(aaa -> aaa.getName().toString().equals("XCODE_N")).collect(Collectors.toList()).get(0);
             propStaryKod = propertyList.stream().filter(aaa -> aaa.getName().toString().equals("DKP_N")).collect(Collectors.toList()).get(0);
             if(propStaryKod.getValue() != null && !propStaryKod.getValue().toString().isBlank()){
-                kodResult = new KodResult(propStaryKod.getValue().toString(), KodProvider.STARY_KOD);
+                kodResult = new KodResult(propStaryKod.getValue().toString(), KodProvider.STARY_KOD, G7OpisProvider.DKP_D);
             } else if(propNowyKod.getValue() != null &&  !propNowyKod.getValue().toString().isBlank()){
-                kodResult = new KodResult(propNowyKod.getValue().toString() + "*", KodProvider.NOWY_KOD);
+                kodResult = new KodResult(propNowyKod.getValue().toString() + "*", KodProvider.NOWY_KOD, G7OpisProvider.XCODE_D);
             }
         } catch (Exception ex) {
 
         }
 
         if(kodResult == null){
-            kodResult = new KodResult(Tools.getNameWithoutExtension(shpEntity.getPlik()), KodProvider.NAZWA_PLIKU);
+            kodResult = new KodResult(Tools.getNameWithoutExtension(shpEntity.getPlik()), KodProvider.NAZWA_PLIKU, G7OpisProvider.XCODE_D);
         }
 
         shpEntity.setKod(kodResult.getKod());
         shpEntity.setKodProvider(kodResult.getProvider());
-
+        shpEntity.setG7OpisProvider(kodResult.getG7OpisProvider());
         for(Property prop : propertyList){
             try{
                 String name = prop.getName().toString();

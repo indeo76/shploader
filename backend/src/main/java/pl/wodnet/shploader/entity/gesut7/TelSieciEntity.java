@@ -24,6 +24,6 @@ public class TelSieciEntity extends SieciBase{
     private String g7_tel_opi;
     public TelSieciEntity(ShpEntity shp) {
         super(shp);
-        g7_tel_opi = shp.getXCODE_N();
+        g7_tel_opi = getG7_opis();
     }
 }

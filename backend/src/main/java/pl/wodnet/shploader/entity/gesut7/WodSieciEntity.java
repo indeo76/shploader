@@ -25,6 +25,6 @@ public class WodSieciEntity extends SieciBase{
 
     public WodSieciEntity(ShpEntity shp) {
         super(shp);
-        g7_wod_opi = shp.getXCODE_D();
+        g7_wod_opi = getG7_opis();
     }
 }

@@ -23,6 +23,6 @@ public class KanArmaturaEntity extends ArmaturaBase {
     private String g7_kan_opi;
     public KanArmaturaEntity(ShpEntity shp) {
         super(shp);
-        g7_kan_opi = shp.getXCODE_D();
+        g7_kan_opi = getG7_opis();
     }
 }

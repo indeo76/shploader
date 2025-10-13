@@ -24,6 +24,6 @@ public class EngSieciEntity extends SieciBase {
     private String g7_pro_opi;
     public EngSieciEntity(ShpEntity shp) {
         super(shp);
-        g7_pro_opi = shp.getXCODE_D();
+        g7_pro_opi = getG7_opis();
     }
 }

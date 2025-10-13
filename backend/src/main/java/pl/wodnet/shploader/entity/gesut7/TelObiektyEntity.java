@@ -21,6 +21,6 @@ public class TelObiektyEntity extends ObiektyBase{
     private String g7_tel_opi;
     public TelObiektyEntity(ShpEntity shp) {
         super(shp);
-        g7_tel_opi = shp.getXCODE_N();
+        g7_tel_opi = getG7_opis();
     }
 }

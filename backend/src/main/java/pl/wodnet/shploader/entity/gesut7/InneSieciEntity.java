@@ -18,8 +18,10 @@ import javax.persistence.Table;
         @Index(columnList = "status", name = "status_inne_sieci_idx")})
 @NoArgsConstructor
 public class InneSieciEntity extends SieciBase{
+    private String g7_eco_opi;
 
     public InneSieciEntity(ShpEntity shp) {
         super(shp);
+        g7_eco_opi = getG7_opis();
     }
 }

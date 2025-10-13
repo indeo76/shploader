@@ -18,8 +18,10 @@ import javax.persistence.Table;
 })
 @NoArgsConstructor
 public class InneObiektyEntity extends ObiektyBase {
+    private String g7_eco_opi;
 
     public InneObiektyEntity(ShpEntity shp) {
         super(shp);
+        g7_eco_opi = getG7_opis();
     }
 }

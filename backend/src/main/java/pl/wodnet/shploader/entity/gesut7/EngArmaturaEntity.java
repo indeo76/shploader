@@ -23,6 +23,6 @@ public class EngArmaturaEntity extends ArmaturaBase {
     private String g7_pro_opi;
     public EngArmaturaEntity(ShpEntity shp) {
         super(shp);
-        g7_pro_opi = shp.getXCODE_D();
+        g7_pro_opi = getG7_opis();
     }
 }

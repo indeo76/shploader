@@ -19,7 +19,10 @@ import javax.persistence.Table;
 })
 @NoArgsConstructor
 public class InneArmaturaEntity extends ArmaturaBase {
+    private String g7_eco_opi;
+
     public InneArmaturaEntity(ShpEntity shp) {
         super(shp);
+        g7_eco_opi = getG7_opis();
     }
 }

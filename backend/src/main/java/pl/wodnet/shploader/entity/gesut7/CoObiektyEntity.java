@@ -23,7 +23,7 @@ public class CoObiektyEntity extends ObiektyBase{
 //    private Double srednic_zw;
     public CoObiektyEntity(ShpEntity shp) {
         super(shp);
-        g7_eco_opi = shp.getXCODE_D();
+        g7_eco_opi = getG7_opis();
 //        srednic_ww = shp.getSSW();
 //        srednic_zw = shp.getSSZ();
     }

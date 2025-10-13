@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Type;
 import pl.wodnet.shploader.entity.ShpEntity;
 import org.locationtech.jts.geom.Geometry;
+import pl.wodnet.shploader.service.classification.KodProvider;
 
 import javax.persistence.*;
 
@@ -61,7 +62,19 @@ public abstract class GesutBaseEntity {
         material = shp.getMAT_N();
         stan = shp.getSTP_N();
         dzialka = shp.getNDZ();
-        g7_opis = shp.getXCODE_D(); //todo - tutaj bierze nowy kod!!!!
+        if(shp.getG7OpisProvider() != null){
+            switch (shp.getG7OpisProvider()){
+                case XCODE_D:
+                    g7_opis = shp.getXCODE_D();
+                    break;
+                case DKP_D:
+                    g7_opis = shp.getDKP_D();
+                    break;
+            }
+        } else {
+            g7_opis = shp.getXCODE_D();
+        }
+
         this.assignGNAMEFields(shp);
     }
 

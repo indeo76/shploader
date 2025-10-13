@@ -21,6 +21,6 @@ public class GazObiektyEntity extends ObiektyBase {
     private String g7_gaz_opi;
     public GazObiektyEntity(ShpEntity shp) {
         super(shp);
-        g7_gaz_opi = shp.getXCODE_D();
+        g7_gaz_opi = getG7_opis();
     }
 }

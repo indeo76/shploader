@@ -24,6 +24,6 @@ public class KanSieciEntity extends SieciBase{
 
     public KanSieciEntity(ShpEntity shp) {
         super(shp);
-        g7_kan_opi = shp.getXCODE_D();
+        g7_kan_opi = getG7_opis();
     }
 }

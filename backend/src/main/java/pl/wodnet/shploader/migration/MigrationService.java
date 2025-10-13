@@ -31,7 +31,7 @@ public class MigrationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewService.class);
 
-    @PostConstruct
+//    @PostConstruct
     public void migrate(){
         LOGGER.info("Rozpoczeto wgrywanie skryptu migracji");
         for(Migration migration : getMigrations()){

@@ -55,5 +55,6 @@ public class Constants {
     public static final String UZYTKI = "uzytki";
     public static final String ADRESY = "adresy";
 
+    public static final int RZEDNA_SCALE = 2;
 
 }

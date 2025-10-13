@@ -20,7 +20,21 @@ public class SytuacjaBaseEntity {
     @Column(name = "the_geom", columnDefinition = "GEOMETRY")
     private Geometry geom;
 
+    private String geometria;
+
     public SytuacjaBaseEntity(ShpBaseEntity shpEntity) {
         this.geom = shpEntity.getGeom();
+        this.geometria = resolveGeometria(shpEntity.getFeatureGeomType());
+    }
+
+    private String resolveGeometria(String featureGeomType) {
+        if(featureGeomType.toLowerCase().contains("point")) {
+            return "punkt";
+        } else if(featureGeomType.toLowerCase().contains("line")) {
+            return "linie";
+        } else if(featureGeomType.toLowerCase().contains("polygon")) {
+            return "poligon";
+        }
+        return null;
     }
 }

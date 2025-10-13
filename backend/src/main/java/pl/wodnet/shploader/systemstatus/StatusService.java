@@ -9,6 +9,14 @@ import pl.wodnet.shploader.enums.ShpImportModeEnum;
 public class StatusService {
     private StatusDto statusData = new StatusDto();
 
+    public Boolean isFree(){
+        return this.statusData.getStatus().equals(StatusEnum.FREE);
+    }
+
+    public Boolean isBuisy(){
+        return this.statusData.getStatus().equals(StatusEnum.BUSY);
+    }
+
     public StatusDto getStatus(){
         return statusData;
     }

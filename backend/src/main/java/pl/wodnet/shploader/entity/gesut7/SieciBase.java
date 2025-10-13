@@ -19,9 +19,9 @@ public abstract class SieciBase extends GesutBaseEntity{
     private String material;
     //private String dzialka;
     private Double srednic; //todo uwaga jaka jednostka!
-    private Float srednic_ww; //todo uwaga jaka jednostka!
-    private Float srednic_zw; //todo uwaga jaka jednostka!
-    private Float dlugosc;
+    private Double srednic_ww; //todo uwaga jaka jednostka!
+    private Double srednic_zw; //todo uwaga jaka jednostka!
+    private Double dlugosc;
     private String izolacja;
     private String przebieg;
     //private String stan;

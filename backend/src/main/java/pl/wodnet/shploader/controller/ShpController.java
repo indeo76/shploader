@@ -4,6 +4,8 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.opengis.feature.Property;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.wodnet.shploader.*;
 import pl.wodnet.shploader.dto.GeoinfoKodyDTO;
@@ -77,7 +79,11 @@ public class ShpController {
     protected final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @RequestMapping(value = "/importDirectory", method = RequestMethod.GET)
-    public String importDirectory(@RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
+    public ResponseEntity<String> importDirectory(@RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
+        if(statusService.isBuisy()){
+            return ResponseEntity.status(HttpStatus.LOCKED)
+                    .header("Komunikat", "Import zablokowany - serwis importu jest aktualnie zajety.").build();
+        }
         statusService.setBuisy(mode);
         service = getService(mode);
         Charset charset = Charset.forName(kodowanie.getCharsetName());
@@ -97,11 +103,15 @@ public class ShpController {
         }
         LOGGER.info("Zakonczono wczytywanie plików");
         statusService.setFree();
-        return "finish";
+        return new ResponseEntity<>("finish", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/importDeclaredTables", method = RequestMethod.GET)
-    public List<ImportResultDTO> importDeclaredTables(@RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
+    public ResponseEntity<List<ImportResultDTO>> importDeclaredTables(@RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
+        if(statusService.isBuisy()){
+            return ResponseEntity.status(HttpStatus.LOCKED)
+                    .header("Komunikat", "Import zablokowany - serwis importu jest aktualnie zajety.").build();
+        }
         statusService.setBuisy(mode);
         service = getService(mode);
         List<ImportResultDTO> resultDTOList = new ArrayList<>();
@@ -115,7 +125,7 @@ public class ShpController {
 //        restartService.restartApp();
         LOGGER.info("Zakonczono wczytywanie plików");
         statusService.setFree();
-        return resultDTOList;
+        return new ResponseEntity<>(resultDTOList, HttpStatus.OK);
     }
 
     private AbstractShpService<?> getService(ShpImportModeEnum mode) {
@@ -194,7 +204,11 @@ public class ShpController {
     }
 
     @RequestMapping(value = "checkNotRecognizedFiles", method = RequestMethod.GET)
-    public List<ImportResultDTO> checkNotRecognizedFiles(@RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie) throws IOException {
+    public ResponseEntity<List<ImportResultDTO>> checkNotRecognizedFiles(@RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie) throws IOException {
+        if(statusService.isBuisy()){
+            return ResponseEntity.status(HttpStatus.LOCKED)
+                    .header("Komunikat", "Import zablokowany – zasób jest aktualnie zajęty.").build();
+        }
         service = getService(mode);
         Charset charset = Charset.forName(kodowanie.getCharsetName());
         String filePath = Constants.SHP_GESUT_DIRECTORY; //todo TYLKO gesut DIRECTORY
@@ -212,7 +226,7 @@ public class ShpController {
                 nieznanyPlik.add(service.getShpInfo(Paths.get(filePath, fileName).toFile()));
             }
         }
-        return nieznanyPlik;
+        return new ResponseEntity<>(nieznanyPlik, HttpStatus.OK);
     }
 
     @RequestMapping(value = "extractValidObjects", method = RequestMethod.GET)

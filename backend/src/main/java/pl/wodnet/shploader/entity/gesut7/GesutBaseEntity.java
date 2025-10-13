@@ -37,7 +37,7 @@ public abstract class GesutBaseEntity {
     private String creation_date;
     private String modification_date;
     private String g7;
-    private Double status;
+    private Integer status;
     private String material;
     private String stan;
     private String g7_opis;

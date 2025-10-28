@@ -37,10 +37,12 @@ import pl.wodnet.shploader.entity.swde.BudynekEntity;
 import pl.wodnet.shploader.entity.swde.DzialkaEntity;
 import pl.wodnet.shploader.entity.swde.ObrebEntity;
 import pl.wodnet.shploader.entity.swde.WlascicielEntity;
+import pl.wodnet.shploader.enums.CharsetEnum;
 import pl.wodnet.shploader.enums.FeatureError;
 import pl.wodnet.shploader.enums.ShpImportModeEnum;
 import pl.wodnet.shploader.service.classification.*;
 import pl.wodnet.shploader.systemstatus.StatusService;
+import pl.wodnet.shploader.tools.DbfEncodingDetector;
 import pl.wodnet.shploader.tools.Tools;
 
 import javax.persistence.EntityManager;
@@ -487,5 +489,33 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
         }
         ImportResultDTO dto = new ImportResultDTO(file.getName(), featureCount, 0, new ArrayList<>());
         return dto;
+    }
+
+    public CharsetEnum detectCharset(String path){
+        List<String> shpList = this.shpListSorted(path);
+        List<String> dbfList = new ArrayList<>();
+        List<CharsetEnum> encodings = new ArrayList<>();
+        for(String shpName: shpList){
+            String dbfName = shpName.replace("shp", "dbf");
+            dbfList.add(dbfName);
+            try {
+                CharsetEnum encoding = DbfEncodingDetector.detectEncoding(Paths.get(path, dbfName).toFile());
+                encodings.add(encoding);
+                if(encoding != null){
+                    LOGGER.info(String.format("Wykryto kodowanie: %s", encoding));
+                    return encoding;
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        LOGGER.info("Kodowanie domyślne: WINDOWS");
+        return CharsetEnum.WINDOWS;
+//        try {
+//            int n = dbfList.size();
+//            return DbfEncodingDetector.detectEncoding(Paths.get(path, dbfList.get(n - 1)).toFile());
+//        } catch (IOException e) {
+//            return CharsetEnum.WINDOWS;
+//        }
     }
 }

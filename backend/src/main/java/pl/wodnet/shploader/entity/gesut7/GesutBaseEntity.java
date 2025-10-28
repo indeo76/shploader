@@ -9,6 +9,8 @@ import org.locationtech.jts.geom.Geometry;
 import pl.wodnet.shploader.service.classification.KodProvider;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -43,6 +45,9 @@ public abstract class GesutBaseEntity {
     private String stan;
     private String g7_opis;
 
+    @Column(length = 1000)
+    private String metadata;
+
     public GesutBaseEntity(ShpEntity shp) {
         shpEntityId = shp.getGid();
         geom = shp.getGeom();
@@ -76,6 +81,9 @@ public abstract class GesutBaseEntity {
         }
 
         this.assignGNAMEFields(shp);
+        if(shp.getGNAME() != null && shp.getGVALUE() != null) {
+            metadata = prepareMetaData(shp.getGNAME(), shp.getGVALUE());
+        }
     }
 
     public Boolean hasValidGeom(ShpEntity shpEntity) {
@@ -95,4 +103,23 @@ public abstract class GesutBaseEntity {
     protected void assignGNAMEFields(ShpEntity shp) {
 
     }
+
+    private static String prepareMetaData(String gname, String gvalue) {
+        String[] keys = gname.split("\\s*,\\s*");
+        String[] values = gvalue.split("\\s*,\\s*");
+
+        List<String> pairs = new ArrayList<>();
+        for (int i = 0; i < Math.min(keys.length, values.length); i++) {
+            String key = keys[i].trim();
+            String value = values[i].trim();
+
+            if (!key.isEmpty() && !value.isEmpty()) {
+                pairs.add(key + ": " + value);
+            }
+        }
+
+        return String.join(", ", pairs);
+    }
+
+
 }

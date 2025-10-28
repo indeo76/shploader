@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.wodnet.shploader.*;
 import pl.wodnet.shploader.dto.GeoinfoKodyDTO;
+import pl.wodnet.shploader.dto.ImportErrorDTO;
 import pl.wodnet.shploader.dto.ImportResultDTO;
 import pl.wodnet.shploader.entity.ShpBaseEntity;
 import pl.wodnet.shploader.enums.CharsetEnum;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class ShpController {
 
     @Autowired
@@ -79,18 +81,20 @@ public class ShpController {
     protected final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @RequestMapping(value = "/importDirectory", method = RequestMethod.GET)
-    public ResponseEntity<String> importDirectory(@RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
+    public ResponseEntity<String> importDirectory(@RequestParam ShpImportModeEnum mode, @RequestParam(required = false) CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
         if(statusService.isBuisy()){
             return ResponseEntity.status(HttpStatus.LOCKED)
                     .header("Komunikat", "Import zablokowany - serwis importu jest aktualnie zajety.").build();
         }
         statusService.setBuisy(mode);
         service = getService(mode);
+        if(kodowanie == null){
+            kodowanie = service.detectCharset(resolveDirectoryPath(mode));
+        }
         Charset charset = Charset.forName(kodowanie.getCharsetName());
         String filePath = resolveDirectoryPath(mode);
         List<String> tablesList = service.prepareTableListForMode(mode);
-        service.truncateTables(tablesList, getSchemaOfMode(mode));
-        service.truncateTables(Arrays.asList(new String[]{"shp"}), "shp");
+        truncateTables(tablesList, mode);
         List<String> fileNameList = service.shpListSorted(filePath); //fileNameListSorted( filePath, "shp");
         List<GeoinfoKodyDTO> geoinfoKodyDTOList = confService.importGeoinfoKody();
         for(String fileName : fileNameList){
@@ -106,27 +110,76 @@ public class ShpController {
         return new ResponseEntity<>("finish", HttpStatus.OK);
     }
 
+    private void truncateTables(List<String> tablesList, ShpImportModeEnum mode) {
+        service.truncateTables(tablesList, getSchemaOfMode(mode));
+        switch(mode){
+            case GESUT:
+                service.truncateTables(Arrays.asList(new String[]{"shp_gesut"}), "shp");
+                break;
+            case SYTUACJA:
+                service.truncateTables(Arrays.asList(new String[]{"shp_sytuacja"}), "shp");
+                break;
+            case SWDE:
+                service.truncateTables(Arrays.asList(new String[]{"shp_swde"}), "shp");
+                break;
+        }
+    }
+
     @RequestMapping(value = "/importDeclaredTables", method = RequestMethod.GET)
-    public ResponseEntity<List<ImportResultDTO>> importDeclaredTables(@RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
+    public ResponseEntity<List<ImportResultDTO>> importDeclaredTables(@RequestParam ShpImportModeEnum mode, @RequestParam(required = false) CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
         if(statusService.isBuisy()){
             return ResponseEntity.status(HttpStatus.LOCKED)
                     .header("Komunikat", "Import zablokowany - serwis importu jest aktualnie zajety.").build();
         }
         statusService.setBuisy(mode);
         service = getService(mode);
+        if(kodowanie == null){
+            kodowanie = service.detectCharset(resolveDirectoryPath(mode));
+        }
         List<ImportResultDTO> resultDTOList = new ArrayList<>();
         List<String> tablesList = service.prepareTableListForMode(mode);
-        service.truncateTables(tablesList, getSchemaOfMode(mode));
+        truncateTables(tablesList, mode);
         for(String tableName: tablesList){
-            resultDTOList.addAll(importDirectoryByTableName(tableName, mode, kodowanie, splitComplexGeom));
-//            LayerDTO layerDTO = new LayerDTO(tableName, count);
-//            layerDTOList.add(layerDTO);
+            updateResultList(resultDTOList, importDirectoryByTableName(tableName, mode, kodowanie, splitComplexGeom));
         }
-//        restartService.restartApp();
         LOGGER.info("Zakonczono wczytywanie plików");
         statusService.setFree();
         return new ResponseEntity<>(resultDTOList, HttpStatus.OK);
     }
+
+    private void updateResultList(List<ImportResultDTO> resultDTOList, List<ImportResultDTO> importResultDTOS) {
+        for (ImportResultDTO newResult : importResultDTOS) {
+            Optional<ImportResultDTO> existingOpt = resultDTOList.stream()
+                    .filter(r -> r.getFileName().equals(newResult.getFileName()))
+                    .findFirst();
+
+            if (existingOpt.isPresent()) {
+                ImportResultDTO existing = existingOpt.get();
+
+                // Połącz dane
+                int combinedTotal = existing.getTotalCount() + newResult.getTotalCount();
+                int combinedSaved = existing.getSavedCount() + newResult.getSavedCount();
+                List<ImportErrorDTO> combinedErrors = new ArrayList<>(existing.getErrors());
+                combinedErrors.addAll(newResult.getErrors());
+
+                // Utwórz nowy obiekt i zastąp w liście
+                ImportResultDTO updated = new ImportResultDTO(
+                        existing.getFileName(),
+                        combinedTotal,
+                        combinedSaved,
+                        combinedErrors
+                );
+
+                int index = resultDTOList.indexOf(existing);
+                resultDTOList.set(index, updated);
+
+            } else {
+                // Nie istnieje — dodaj nowy
+                resultDTOList.add(newResult);
+            }
+        }
+    }
+
 
     private AbstractShpService<?> getService(ShpImportModeEnum mode) {
         switch (mode){
@@ -159,9 +212,12 @@ public class ShpController {
     }
 
     @RequestMapping(value = "importDirectoryByTableName", method = RequestMethod.GET)
-    public List<ImportResultDTO> importDirectoryByTableName(@RequestParam String tableName, @RequestParam ShpImportModeEnum mode, @RequestParam CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
+    public List<ImportResultDTO> importDirectoryByTableName(@RequestParam String tableName, @RequestParam ShpImportModeEnum mode, @RequestParam(required = false) CharsetEnum kodowanie, @RequestParam(defaultValue = "true") boolean splitComplexGeom){
         statusService.setBuisy(mode);
         service = getService(mode);
+        if(kodowanie == null){
+            kodowanie = service.detectCharset(resolveDirectoryPath(mode));
+        }
         List<ImportResultDTO> resultDTOList = new ArrayList<>();
         Charset charset = Charset.forName(kodowanie.getCharsetName());
         String filePath = resolveDirectoryPath(mode);

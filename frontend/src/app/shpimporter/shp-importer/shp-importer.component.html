@@ -1,0 +1,65 @@
+
+<div class="col-12" *ngIf="statusResponse">
+  <h2 *ngIf="statusResponse.status === 'BUSY'">Trwa import</h2>
+  Status: <b>{{statusResponse.status}}</b>
+</div>
+<div class="col-12" *ngIf="statusResponse && statusResponse.task && statusResponse.task.importMode && statusResponse.task.currentTaskDescription">
+  <p>Tryb importu: <b>{{statusResponse.task.importMode}}</b></p>
+  <p>Bieżące zadanie: <b>{{statusResponse.task.currentTaskDescription}}</b></p>
+</div>
+
+<div class="col-12">&nbsp;</div>
+<div class="col-12">
+  <button class="btn btn-primary me-2" (click)="importGesut()" [disabled]="!isFree()">Import GESUT</button>
+  <button class="btn btn-primary me-2" (click)="importSytuacja()" [disabled]="!isFree()">Import SYTUACJA</button>
+  <button class="btn btn-primary me-2" (click)="importSwde()" [disabled]="!isFree()">Import SWDE</button>
+</div>
+<div class="col-12">
+  <div class="spinner-wrapper">
+    <p-progressSpinner ariaLabel="loading" *ngIf="statusResponse && statusResponse.status === 'BUSY'" />
+  </div>
+</div>
+<div class="col-12" *ngIf="importResultList">
+  <h2>Zaimportowane pliki</h2>
+  <p-table [value]="importResultList" [tableStyle]="{ 'min-width': '50rem' }"
+           styleClass="p-datatable-sm p-datatable-striped p-datatable-gridlines"
+           [paginator]="true"
+           [rows]="10"
+           paginatorPosition="both"
+           [rowsPerPageOptions]="[5, 10, 20, 50]"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="fileName">Filename <p-sortIcon field="fileName"></p-sortIcon></th>
+        <th pSortableColumn="totalCount">totalCount <p-sortIcon field="totalCount"></p-sortIcon></th>
+        <th pSortableColumn="savedCount">savedCount <p-sortIcon field="savedCount"></p-sortIcon></th>
+        <th pSortableColumn="errors.length">Liczba błędów <p-sortIcon field="errors.length"></p-sortIcon></th>
+        <th>Szczegóły błędów</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-row>
+      <tr *ngIf="getTyped(row) as row">
+        <td>{{ row.fileName }}</td>
+        <td>{{ row.totalCount }}</td>
+        <td>{{ row.savedCount }}</td>
+        <td>
+          {{ row.errors.length }}<br/>
+        </td>
+        <td>
+          <p-inplace closable="closable" *ngIf="row.errors.length > 0">
+            <ng-template pTemplate="display">
+              <button class="btn btn-warning">Pokaż błędy</button>
+            </ng-template>
+            <ng-template pTemplate="content">
+        <span>
+          <li *ngFor="let error of row.errors">
+            {{error.error}} id: {{error.value}}
+          </li>
+        </span>
+            </ng-template>
+          </p-inplace>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

@@ -228,11 +228,14 @@ public class ShpController {
         List<String> tablesList = new ArrayList<>();
         tablesList.add(tableName);
         service.truncateTables(tablesList, getSchemaOfMode(mode));
+        List<String> importedFileNameList = new ArrayList<>();
         for(String fileName : fileNameList){
             for(String kodMnemoniczny: kodyMnemoniczneList){
-                if(fileName.contains(kodBezGwiazdgki(kodMnemoniczny))){
+                //uwaga - trzeba zapamietać i sprawdzić czy dany plik nie został przypadkiem już wczytany przez inną regułę (duble):
+                if(fileName.contains(kodBezGwiazdgki(kodMnemoniczny)) && !importedFileNameList.contains(fileName)){
                     try {
                         resultDTOList.add(service.importFile(Paths.get(filePath, fileName).toString(), geoinfoKodyDTOList, charset, splitComplexGeom));
+                        importedFileNameList.add(fileName);
                     } catch (IOException e) {
                         LOGGER.error(String.format("Wystapil blad: %s", e.getMessage()));
                         throw new RuntimeException(e);

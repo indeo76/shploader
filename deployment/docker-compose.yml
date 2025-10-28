@@ -1,4 +1,4 @@
-version: '3.8'
+version: '2'
 services:
   shploader:
     build:
@@ -7,8 +7,9 @@ services:
     image: shploader:latest
     ports:
       - "8095:8095"
+    restart: always
     volumes:
-      - "d:/projekty/shploader/shploader/deployment/conf:/volume/conf"
-      - "d:/rozne/2025-wrzesnia/2025-09-shp/PWiK/SHAPE GESUT:/volume/gesut"
-      - "d:/rozne/2025-wrzesnia/2025-09-shp/PWiK/shp_swde/nowe-cp1250:/volume/swde"
-      - "c:/Modul-mapy/shploader/shp/geoinfo_2024_10:/volume/sytuacja"
+      - "/deployment/java/shploader/deployment/conf:/volume/conf"
+      - "/mnt/projekty/tmp/aktualizacja wrzesień 2025/PWiK(1)/PWiK/SHAPE GESUT:/volume/gesut"
+      - "/mnt/projekty/tmp/aktualizacja wrzesień 2025/shp_swde/nowe-cp1250:/volume/swde"
+      - "/mnt/projekty/tmp/aktualizacja wrzesień 2025/PWiK(1)/PWiK/SHAPE BDOT500:/volume/sytuacja"

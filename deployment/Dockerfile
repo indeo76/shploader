@@ -6,13 +6,13 @@ COPY shploader.jar shploader.jar
 
 # Zmienne środowiskowe aplikacji
 ENV db.driverclassname=org.postgresql.Driver
-ENV db.password=equinoxe
-ENV db.url=jdbc:postgresql://192.168.1.32:5432/shploader?currentSchema=shp,public
-ENV	db.username=tomek
+ENV db.password=Wrzesnia2014
+ENV db.url=jdbc:postgresql://172.20.200.40:5433/wrzesnia_shploader?currentSchema=shp,public
+ENV	db.username=postgres
 ENV hibernate.dialect=org.hibernate.spatial.dialect.postgis.PostgisDialect
 ENV hibernate.format_sql=true
 ENV hibernate.generate_statistics=false
-ENV hibernate.hbm2ddl.auto=none
+ENV hibernate.hbm2ddl.auto=update
 ENV hibernate.show_sql=false
 ENV hibernate.use-new-id-generator-mappings=true
 ENV SHP_GESUT_DIRECTORY=/volume/gesut

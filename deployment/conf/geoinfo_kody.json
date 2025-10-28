@@ -41,6 +41,14 @@
       "kod_mnemoniczny":"wlasciciele",
       "tabela":"gesut7.wlasciciele"
    },
+   {
+      "kod_mnemoniczny":"EGB_KonturUzytkuGruntowego",
+      "tabela":"gesut7.uzytki"
+   },
+   {
+      "kod_mnemoniczny":"EGB_AdresNieruchomosci",
+      "tabela":"gesut7.adresy"
+   },
    {"kod_mnemoniczny":"GUPCPZ","tabela":"gesut7.co_armatura"},
 {"kod_mnemoniczny":"GUPCWB","tabela":"gesut7.co_armatura"},
 {"kod_mnemoniczny":"GUPCPI","tabela":"gesut7.co_armatura"},

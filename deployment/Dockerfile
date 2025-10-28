@@ -1,14 +1,26 @@
+# Etap 1: budowanie aplikacji
+FROM maven:3.9.4-eclipse-temurin-17-alpine AS builder
+
+WORKDIR /build
+
+# Skopiuj źródła i plik pom.xml
+COPY . .
+
+# Buduj aplikację (pomija testy, jeśli nie są potrzebne)
+RUN mvn clean package -DskipTests
+
+# Etap 2: uruchomienie
 FROM eclipse-temurin:11-jdk-alpine
 
 WORKDIR /app
 
-COPY shploader.jar shploader.jar
+COPY --from=builder /build/target/shploader.jar shploader.jar
 
 # Zmienne środowiskowe aplikacji
 ENV db.driverclassname=org.postgresql.Driver
-ENV db.password=Wrzesnia2014
-ENV db.url=jdbc:postgresql://172.20.200.40:5433/wrzesnia_shploader?currentSchema=shp,public
-ENV	db.username=postgres
+ENV db.password=equinoxe
+ENV db.url=jdbc:postgresql://192.168.1.32:5432/shploader_struktura?currentSchema=shp,public
+ENV	db.username=tomek
 ENV hibernate.dialect=org.hibernate.spatial.dialect.postgis.PostgisDialect
 ENV hibernate.format_sql=true
 ENV hibernate.generate_statistics=false

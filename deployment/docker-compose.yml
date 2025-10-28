@@ -2,14 +2,14 @@ version: '2'
 services:
   shploader:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../backend
+      dockerfile: ../deployment/Dockerfile
     image: shploader:latest
     ports:
       - "8095:8095"
     restart: always
     volumes:
-      - "/deployment/java/shploader/deployment/conf:/volume/conf"
-      - "/mnt/projekty/tmp/aktualizacja wrzesień 2025/PWiK(1)/PWiK/SHAPE GESUT:/volume/gesut"
-      - "/mnt/projekty/tmp/aktualizacja wrzesień 2025/shp_swde/nowe-cp1250:/volume/swde"
-      - "/mnt/projekty/tmp/aktualizacja wrzesień 2025/PWiK(1)/PWiK/SHAPE BDOT500:/volume/sytuacja"
+      - "D:\\projekty\\shploader\\shploader\\deployment\\conf:/volume/conf"
+      - "D:\\rozne\\2025-wrzesnia\\2025-09-shp\\PWiK\\SHAPE GESUT:/volume/gesut"
+      - "D:\\rozne\\2025-wrzesnia\\2025-09-shp\\PWiK\\shp_swde\\nowe-cp1250:/volume/swde"
+      - "D:\\rozne\\2025-wrzesnia\\2025-09-shp\\PWiK\\SHAPE BDOT500:/volume/sytuacja"

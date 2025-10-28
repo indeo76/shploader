@@ -7,6 +7,7 @@ import pl.wodnet.shploader.Constants;
 import pl.wodnet.shploader.entity.ShpEntity;
 import pl.wodnet.shploader.entity.gesut7.*;
 import pl.wodnet.shploader.entity.sytuacja.SytuacjaEntity;
+import pl.wodnet.shploader.exception.GeometryMismatchException;
 import pl.wodnet.shploader.provider.ShpEntityProvider;
 import pl.wodnet.shploader.repository.ShpRepository;
 import javax.persistence.EntityManager;
@@ -23,9 +24,9 @@ public class ShpService extends AbstractShpService<ShpEntity> {
         super(entityProvider);
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = GeometryMismatchException.class)
     @Override
-    public void processShpEntity(EntityManager em, ShpEntity shpEntity) {
+    public void processShpEntity(EntityManager em, ShpEntity shpEntity) throws GeometryMismatchException {
         if(shpEntity.getTableName().contains(Constants.WOD_ARMATURA)){
             WodArmaturaEntity wodArmatura = new WodArmaturaEntity(shpEntity);
             em.persist(wodArmatura);
@@ -40,7 +41,9 @@ public class ShpService extends AbstractShpService<ShpEntity> {
             if(shpEntity.getFeatureGeomType().contains("Point")){
                 em.persist(kanArmatura);
             } else {
-                LOGGER.warn(String.format("Niezgodnosc geometrii obiektu plik: %s, kod: %s %s %s", shpEntity.getPlik(), shpEntity.getKod(), shpEntity.getTableName(), shpEntity.getGeom().getGeometryType()));
+                String message = String.format("Niezgodnosc geometrii obiektu plik: %s, kod: %s %s %s", shpEntity.getPlik(), shpEntity.getKod(), shpEntity.getTableName(), shpEntity.getGeom().getGeometryType());
+                LOGGER.warn(message);
+                throw new GeometryMismatchException(message);
             }
         }else if(shpEntity.getTableName().contains(Constants.KAN_SIECI)){
             KanSieciEntity kanSieci = new KanSieciEntity(shpEntity);
@@ -74,7 +77,9 @@ public class ShpService extends AbstractShpService<ShpEntity> {
             if(shpEntity.getFeatureGeomType().contains("Point")){
                 em.persist(telArmatura);
             } else {
-                LOGGER.warn(String.format("Niezgodnosc geometrii obiektu plik: %s, kod: %s %s %s", shpEntity.getPlik(), shpEntity.getKod(), shpEntity.getTableName(), shpEntity.getGeom().getGeometryType()));
+                String message = String.format("Niezgodnosc geometrii obiektu plik: %s, kod: %s %s %s", shpEntity.getPlik(), shpEntity.getKod(), shpEntity.getTableName(), shpEntity.getGeom().getGeometryType());
+                LOGGER.warn(message);
+                throw new GeometryMismatchException(message);
             }
         }else if(shpEntity.getTableName().contains(Constants.TEL_OBIEKTY)) {
             TelObiektyEntity telObiekty = new TelObiektyEntity(shpEntity);
@@ -105,15 +110,18 @@ public class ShpService extends AbstractShpService<ShpEntity> {
             if(entity.hasValidGeom(shpEntity)){
                 em.persist(entity);
             } else {
-                LOGGER.warn(String.format("Niezgodnosc geometrii obiektu plik: %s, kod: %s %s %s", shpEntity.getPlik(), shpEntity.getKod(), shpEntity.getTableName(), shpEntity.getGeom().getGeometryType()));
+                String message = String.format("Niezgodnosc geometrii obiektu plik: %s, kod: %s %s %s", shpEntity.getPlik(), shpEntity.getKod(), shpEntity.getTableName(), shpEntity.getGeom().getGeometryType());
+                LOGGER.warn(message);
+                throw new GeometryMismatchException(message);
             }
         } else if (shpEntity.getTableName().contains(Constants.INNE_OBIEKTY)) {
             InneObiektyEntity entity = new InneObiektyEntity(shpEntity);
             if(entity.hasValidGeom(shpEntity)){
                 em.persist(entity);
             } else {
-                LOGGER.warn(String.format("Niezgodnosc geometrii obiektu plik: %s, kod: %s %s %s", shpEntity.getPlik(), shpEntity.getKod(), shpEntity.getTableName(), shpEntity.getGeom().getGeometryType()));
-            }
+                String message = String.format("Niezgodnosc geometrii obiektu plik: %s, kod: %s %s %s", shpEntity.getPlik(), shpEntity.getKod(), shpEntity.getTableName(), shpEntity.getGeom().getGeometryType());
+                LOGGER.warn(message);
+                throw new GeometryMismatchException(message);            }
         }
     }
 

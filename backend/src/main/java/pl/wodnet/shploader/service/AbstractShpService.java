@@ -40,6 +40,7 @@ import pl.wodnet.shploader.entity.swde.WlascicielEntity;
 import pl.wodnet.shploader.enums.CharsetEnum;
 import pl.wodnet.shploader.enums.FeatureError;
 import pl.wodnet.shploader.enums.ShpImportModeEnum;
+import pl.wodnet.shploader.exception.GeometryMismatchException;
 import pl.wodnet.shploader.service.classification.*;
 import pl.wodnet.shploader.systemstatus.StatusService;
 import pl.wodnet.shploader.tools.DbfEncodingDetector;
@@ -87,7 +88,7 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
 
 
     @Transactional
-    public Integer processFeatures(List<GeoinfoKodyDTO> geoinfoKodyDTOList, SimpleFeatureIterator iterator, File file, String key, int targetSrid, List<ImportErrorDTO> errors, boolean splitComplexGeom) throws TransformException, ParseException, FactoryException {
+    public Integer processFeatures(List<GeoinfoKodyDTO> geoinfoKodyDTOList, SimpleFeatureIterator iterator, File file, String key, int targetSrid, List<ImportErrorDTO> errors, boolean splitComplexGeom) throws TransformException, ParseException, FactoryException, GeometryMismatchException {
         int i = 0;
         Integer iGeomObjects = 0;
         while (iterator.hasNext()) {
@@ -124,10 +125,22 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
                     //todo cała reszta..
 //                iGeomObjects ++;
                     Geometry g = complexGeometry.getGeometryN(iGeom);
-                    iGeomObjects = processGeometry(em, file, feature, iGeomObjects, targetSrid, geoinfoKodyDTOList, i, BATCH_SIZE, g, complexGeometry, entityList);
+                    try {
+                        iGeomObjects = processGeometry(em, file, feature, iGeomObjects, targetSrid, geoinfoKodyDTOList, i, BATCH_SIZE, g, complexGeometry, entityList);
+                    } catch (GeometryMismatchException e) {
+                        String identifier = feature.getProperty(key).getValue().toString();
+                        errors.add(new ImportErrorDTO(key, identifier.toString(), FeatureError.NIEZGODNOSC_GEOMETRII));
+
+                    }
                 }
             } else {
-                processGeometry(em, file, feature, iGeomObjects, targetSrid, geoinfoKodyDTOList, i, BATCH_SIZE, complexGeometry, complexGeometry, entityList);
+                try {
+                    processGeometry(em, file, feature, iGeomObjects, targetSrid, geoinfoKodyDTOList, i, BATCH_SIZE, complexGeometry, complexGeometry, entityList);
+                } catch (GeometryMismatchException e) {
+                    String identifier = feature.getProperty(key).getValue().toString();
+                    errors.add(new ImportErrorDTO(key, identifier.toString(), FeatureError.NIEZGODNOSC_GEOMETRII));
+
+                }
             }
 
         }else{
@@ -139,13 +152,13 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
     }
 
     @Transactional
-    public Integer processGeometry(EntityManager em, File file, SimpleFeature feature, Integer iGeomObjects, int targetSrid, List<GeoinfoKodyDTO> geoinfoKodyDTOList, int i, String BATCH_SIZE, Geometry g, Geometry complexGeometry, List<Entity> entityList) throws FactoryException, TransformException, ParseException {
+    public Integer processGeometry(EntityManager em, File file, SimpleFeature feature, Integer iGeomObjects, int targetSrid, List<GeoinfoKodyDTO> geoinfoKodyDTOList, int i, String BATCH_SIZE, Geometry g, Geometry complexGeometry, List<Entity> entityList) throws FactoryException, TransformException, ParseException, GeometryMismatchException {
         try {
-            if(g != null){
+            if (g != null) {
                 GeometryAttribute sourceGeometry = feature.getDefaultGeometryProperty();
                 GeometryType geometryType = sourceGeometry.getType();
                 CoordinateReferenceSystem sourceCRS = geometryType.getCoordinateReferenceSystem();
-                if(sourceCRS == null){
+                if (sourceCRS == null) {
                     sourceCRS = CRS.decode("EPSG:" + 2177);
                     //LOGGER.info("Brak ukladu wspolrzednych");
                 }
@@ -154,9 +167,9 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
 
                 CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:" + targetSrid);
                 MathTransform transform = null;
-                try{
+                try {
                     transform = CRS.findMathTransform(sourceCRS, targetCRS, true);
-                }catch (Exception ex){
+                } catch (Exception ex) {
                     int d = 0;
                 }
 
@@ -186,7 +199,7 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
                 KodResult kodResult = null;
                 Entity shpEntity = getEntity();
                 shpEntity.setFeatureGeomType(geometryType.getName().toString());
-                if(g.getNumGeometries() > 1){
+                if (g.getNumGeometries() > 1) {
                     shpEntity.setMultiGeometry(true);
                 } else {
                     shpEntity.setMultiGeometry(false);
@@ -194,7 +207,7 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
                 shpEntity.setPlik(file.getName());
                 shpEntity.setPlikModificationDate(file);
                 kodResult = findKodMnemoniczny(shpEntity, properties, propertyTypes, propertyList);
-                if(kodResult==null){
+                if (kodResult == null) {
                     kodResult = new KodResult(Tools.getNameWithoutExtension(file.getName()), KodProvider.NAZWA_PLIKU, G7OpisProvider.XCODE_D);
                 }
                 TargetTableResult targetTableResult = confService.findTargetTable(kodResult.getKod(), geoinfoKodyDTOList);// todo tu ma trafic chyba stary kod nie nowy
@@ -203,12 +216,12 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
                 shpEntity.setTableName(targetTableResult.getTableName());
                 shpEntity.setTargetTableProvider(targetTableResult.getTableNameProvider());
                 shpEntity.setGeom(geom);
-                try{
+                try {
                     shpEntity.setRoot(classificationProvider.getRoot(shpEntity.getXCODE_N()));
                     shpEntity.setGeomType(classificationProvider.getGeomType(shpEntity.getXCODE_N()));
                     shpEntity.setBranza(classificationProvider.getBranza(shpEntity.getXCODE_N()));
                     shpEntity.setObiektType(classificationProvider.getObiektType(shpEntity.getXCODE_N()));
-                } catch (Exception ex){
+                } catch (Exception ex) {
 
                 }
 
@@ -220,12 +233,12 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
                 } catch (Exception ex) {
                     LOGGER.error("Nie mozna wykonac em.persist(shpEntity)", ex);
                 }
-                if(shpEntity.getTableName() !=null){
+                if (shpEntity.getTableName() != null) {
                     processShpEntity(em, shpEntity);
                 }
                 entityList.add(shpEntity);
                 iGeomObjects = iGeomObjects + 1;
-                if(i % Integer.parseInt(BATCH_SIZE) == 0){
+                if (i % Integer.parseInt(BATCH_SIZE) == 0) {
                     synchronizeTransaction(em);
 //                            LOGGER.info("Czas if(i % " + i + " == 0) start: " + (System.currentTimeMillis() - startTime));
                     String taskDescription = String.format("Saved: %s %s (kod nowy: %s), (kod stary: %s), (kod uzyty: %s): %s features / geoms: %s", file.getName(), targetTableResult.getTableName(), shpEntity.getXCODE_N(), shpEntity.getDKP_N(), kodResult.getKod(), i, iGeomObjects);
@@ -234,6 +247,8 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
 //                            LOGGER.info("Czas if(i % " + i + " == 0) end: " + (System.currentTimeMillis() - startTime));
                 }
             }
+        }catch (GeometryMismatchException ex) {
+            throw ex;
         } catch (Exception ex) {
             LOGGER.error(String.format("Wystapil blad przetwarzania geometrii pliku: %s blad: %s", file.getName(), ex.getMessage()));
         }
@@ -291,7 +306,7 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
             LOGGER.error(String.format("Blad NoSuchMethodError: %s", ex.getMessage()));
         } catch (Throwable e) {
             LOGGER.error(String.format("Wystapil blad importFile(): %s", e.getMessage()));
-        }finally {
+        } finally {
             if(iterator != null){
                 iterator.close();
             }
@@ -441,7 +456,7 @@ public abstract class AbstractShpService <Entity extends ShpBaseEntity>{
         return name;
     }
 
-    public abstract void processShpEntity(EntityManager em, Entity shpEntity);
+    public abstract void processShpEntity(EntityManager em, Entity shpEntity) throws GeometryMismatchException;
 
     @Transactional
     public void truncateTables(List<String> tablesList, String schema) {

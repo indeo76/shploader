@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0",
-    "build": "ng build --base-href=\"/shploader/\"",
+    "buildProd": "ng build --base-href=\"/shploader/\" --configuration production",
     "watch": "ng build --base-href=\"/shploader/\" --watch --configuration development",
     "test": "ng test"
   },

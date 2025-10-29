@@ -3,12 +3,13 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {StatusResponse} from '../model/StatusResponse';
 import {ImportResult} from '../model/ImportResult';
+import {environment} from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShpImportService {
-  private path: string = 'http://localhost:8095/shploader/';
+  private path: string = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 

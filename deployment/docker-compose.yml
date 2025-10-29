@@ -2,8 +2,8 @@ version: '2'
 services:
   shploader:
     build:
-      context: ../backend
-      dockerfile: ../deployment/Dockerfile
+      context: ../
+      dockerfile: deployment/Dockerfile
     image: shploader:latest
     environment:
       db.driverclassname: org.postgresql.Driver

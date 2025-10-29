@@ -1,10 +1,22 @@
-# Etap 1: budowanie aplikacji
+# Etap 0: budowanie frontendu
+FROM node:20-alpine AS frontend-builder
+
+WORKDIR /frontend
+
+COPY /frontend ./
+RUN npm install
+RUN npm run buildProd
+
+# Etap 1: budowanie backendu
 FROM maven:3.9.4-eclipse-temurin-17-alpine AS builder
 
 WORKDIR /build
 
 # Skopiuj źródła i plik pom.xml
-COPY . .
+COPY /backend .
+
+# Skopiuj zbudowany frontend do zasobów Spring Boota
+COPY --from=frontend-builder /frontend/dist/frontend/browser ./src/main/resources/static/
 
 # Buduj aplikację (pomija testy, jeśli nie są potrzebne)
 RUN mvn clean package -DskipTests

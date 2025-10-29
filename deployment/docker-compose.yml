@@ -20,6 +20,8 @@ services:
       SHP_SWDE_DIRECTORY: /volume/swde
       SHP_SYTUACJA_DIRECTORY: /volume/sytuacja
       JAVA_OPTS: "-Xms3000m -Xmx3000m -XX:+UseParallelGC -Duser.timezone=Europe/Belgrade"
+      SPRING_SECURITY_USER_NAME: admin
+      SPRING_SECURITY_USER_PASSWORD: "adm!n629"
     ports:
       - "8095:8095"
     restart: always

@@ -1,0 +1,32 @@
+version: '2'
+services:
+  shploader:
+    build:
+      context: ../
+      dockerfile: deployment/Dockerfile
+    image: shploader:0.0.1-SNAPSHOT
+    environment:
+      db.driverclassname: org.postgresql.Driver
+      db.url: jdbc:postgresql://172.20.200.40:5433/wrzesnia_shploader?currentSchema=shp,public
+      db.username: postgres
+      db.password: Wrzesnia2014
+      hibernate.dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
+      hibernate.format_sql: true
+      hibernate.generate_statistics: false
+      hibernate.hbm2ddl.auto: update
+      hibernate.show_sql: false
+      hibernate.use-new-id-generator-mappings: true
+      SHP_GESUT_DIRECTORY: /volume/gesut
+      SHP_SWDE_DIRECTORY: /volume/swde
+      SHP_SYTUACJA_DIRECTORY: /volume/sytuacja
+      JAVA_OPTS: "-Xms3000m -Xmx3000m -XX:+UseParallelGC -Duser.timezone=Europe/Belgrade"
+      SPRING_SECURITY_USER_NAME: admin
+      SPRING_SECURITY_USER_PASSWORD: "adm!n629"
+    ports:
+      - "8095:8095"
+    restart: always
+    volumes:
+      - "/deployment/java/shploader/deployment/conf:/volume/conf"
+      - "/mnt/projekty/tmp/aktualizacja wrzesień 2025/PWiK(1)/PWiK/SHAPE GESUT:/volume/gesut"
+      - "/mnt/projekty/tmp/aktualizacja wrzesień 2025/shp_swde/nowe-cp1250:/volume/swde"
+      - "/mnt/projekty/tmp/aktualizacja wrzesień 2025/PWiK(1)/PWiK/SHAPE BDOT500:/volume/sytuacja"

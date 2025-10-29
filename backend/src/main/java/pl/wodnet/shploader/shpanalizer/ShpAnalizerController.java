@@ -12,7 +12,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/shpanalizer")
+@RequestMapping("/api/shpanalizer")
 public class ShpAnalizerController {
     private final ShpAnalizerService service;
     protected final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(getClass());

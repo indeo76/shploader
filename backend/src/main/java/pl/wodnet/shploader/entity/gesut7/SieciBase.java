@@ -31,7 +31,7 @@ public abstract class SieciBase extends GesutBaseEntity{
         funkcja = shp.getFNP_N();
         funkcja_n = shp.getFNP_D();
         material = shp.getMAT_N();
-        srednic = shp.getSSN();
+        srednic = getSrednica(shp.getSSN());
         srednic_ww = shp.getSSW();
         srednic_zw = shp.getSSZ();
         dlugosc = shp.getXLENGTH();
@@ -53,10 +53,18 @@ public abstract class SieciBase extends GesutBaseEntity{
         }
         if(mapa.containsKey(GNAME.SREDNICA_URZADZENIA.getLabel())){
             try{
-                this.srednic = Double.parseDouble(mapa.get(GNAME.SREDNICA_URZADZENIA.getLabel()));
+                this.srednic = getSrednica(Double.parseDouble(mapa.get(GNAME.SREDNICA_URZADZENIA.getLabel())));
             } catch (Exception ex){
                 System.out.println(ex.getMessage());
             }
+        }
+    }
+
+    private Double getSrednica(Double srednica){
+        if(srednica != null){
+            return 1000 * srednica;
+        } else {
+            return srednica;
         }
     }
 }

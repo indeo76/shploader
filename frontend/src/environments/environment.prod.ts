@@ -2,5 +2,5 @@
 export const environment = {
   production: true,
   baseUrl: "/shploader/",
-  apiUrl: "/shploader/",
+  apiUrl: "/shploader/api/",
 };

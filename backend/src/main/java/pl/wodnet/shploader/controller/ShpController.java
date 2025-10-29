@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestController
+@RequestMapping("/api")
 @CrossOrigin(origins = "*")
 public class ShpController {
 

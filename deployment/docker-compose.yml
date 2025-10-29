@@ -4,7 +4,7 @@ services:
     build:
       context: ../
       dockerfile: deployment/Dockerfile
-    image: shploader:latest
+    image: shploader:0.0.1-SNAPSHOT
     environment:
       db.driverclassname: org.postgresql.Driver
       db.url: jdbc:postgresql://192.168.1.32:5432/shploader_struktura?currentSchema=shp,public

@@ -16,21 +16,6 @@ WORKDIR /app
 
 COPY --from=builder /build/target/shploader.jar shploader.jar
 
-# Zmienne środowiskowe aplikacji
-ENV db.driverclassname=org.postgresql.Driver
-ENV db.password=equinoxe
-ENV db.url=jdbc:postgresql://192.168.1.32:5432/shploader_struktura?currentSchema=shp,public
-ENV	db.username=tomek
-ENV hibernate.dialect=org.hibernate.spatial.dialect.postgis.PostgisDialect
-ENV hibernate.format_sql=true
-ENV hibernate.generate_statistics=false
-ENV hibernate.hbm2ddl.auto=update
-ENV hibernate.show_sql=false
-ENV hibernate.use-new-id-generator-mappings=true
-ENV SHP_GESUT_DIRECTORY=/volume/gesut
-ENV SHP_SWDE_DIRECTORY=/volume/swde
-ENV SHP_SYTUACJA_DIRECTORY=/volume/sytuacja
-
 # Parametry JVM
 ENV JAVA_OPTS="-Xms3000m -Xmx3000m -XX:+UseParallelGC -Duser.timezone=Europe/Belgrade"
 

@@ -5,6 +5,21 @@ services:
       context: ../backend
       dockerfile: ../deployment/Dockerfile
     image: shploader:latest
+    environment:
+      db.driverclassname: org.postgresql.Driver
+      db.url: jdbc:postgresql://192.168.1.32:5432/shploader_struktura?currentSchema=shp,public
+      db.username: tomek
+      db.password: equinoxe
+      hibernate.dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
+      hibernate.format_sql: true
+      hibernate.generate_statistics: false
+      hibernate.hbm2ddl.auto: update
+      hibernate.show_sql: false
+      hibernate.use-new-id-generator-mappings: true
+      SHP_GESUT_DIRECTORY: /volume/gesut
+      SHP_SWDE_DIRECTORY: /volume/swde
+      SHP_SYTUACJA_DIRECTORY: /volume/sytuacja
+      JAVA_OPTS: "-Xms3000m -Xmx3000m -XX:+UseParallelGC -Duser.timezone=Europe/Belgrade"
     ports:
       - "8095:8095"
     restart: always

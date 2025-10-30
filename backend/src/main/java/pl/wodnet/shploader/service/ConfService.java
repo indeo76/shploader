@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import pl.wodnet.shploader.Constants;
 import pl.wodnet.shploader.dto.GeoinfoKodyDTO;
+import pl.wodnet.shploader.geoinfokody.GeoinfoKodyService;
 import pl.wodnet.shploader.service.classification.TargetTableProvider;
 import pl.wodnet.shploader.service.classification.TargetTableResult;
 
@@ -23,7 +25,28 @@ import java.util.Scanner;
 public class ConfService {
     static final Logger LOGGER = LoggerFactory.getLogger(ConfService.class);
 
+    @Value("${GEOINFO_KODY_PROVIDER:file}")
+    private String GEOINFO_KODY_PROVIDER;
+
+    private final GeoinfoKodyService geoinfoKodyService;
+
+    public ConfService(GeoinfoKodyService geoinfoKodyService) {
+        this.geoinfoKodyService = geoinfoKodyService;
+    }
+
     public List<GeoinfoKodyDTO> importGeoinfoKody(){
+        if(GEOINFO_KODY_PROVIDER.equals("database")){
+            return getFromDatabase();
+        } else {
+            return getFromFile();
+        }
+    }
+
+    private List<GeoinfoKodyDTO> getFromDatabase() {
+        return geoinfoKodyService.getFromDatabase();
+    }
+
+    private static List<GeoinfoKodyDTO> getFromFile() {
         List<GeoinfoKodyDTO> geoifoKodyDTOList = null;
         String filePath = Constants.GEOINFO_KODY_FILE;
 

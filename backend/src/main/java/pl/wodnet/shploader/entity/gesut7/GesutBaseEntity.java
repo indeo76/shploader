@@ -45,8 +45,8 @@ public abstract class GesutBaseEntity {
     private String stan;
     private String g7_opis;
 
-    @Column(length = 1000)
-    private String metadata;
+    @Column(length = 2000)
+    private String opis;
 
     public GesutBaseEntity(ShpEntity shp) {
         shpEntityId = shp.getGid();
@@ -82,7 +82,7 @@ public abstract class GesutBaseEntity {
 
         this.assignGNAMEFields(shp);
         if(shp.getGNAME() != null && shp.getGVALUE() != null) {
-            metadata = prepareMetaData(shp.getGNAME(), shp.getGVALUE());
+            opis = prepareMetaData(shp.getGNAME(), shp.getGVALUE());
         }
     }
 

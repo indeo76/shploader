@@ -6,7 +6,9 @@ import lombok.Setter;
 import pl.wodnet.shploader.entity.ShpEntity;
 import pl.wodnet.shploader.enums.GNAME;
 
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 import java.util.Map;
 
 @Getter
@@ -17,6 +19,10 @@ public abstract class SieciBase extends GesutBaseEntity{
     private String funkcja;
     private String funkcja_n;
     private String material;
+
+    @Column(name = "material_description")
+    private String materialDescription;
+
     //private String dzialka;
     private Double srednic; //todo uwaga jaka jednostka!
     private Double srednic_ww; //todo uwaga jaka jednostka!
@@ -46,7 +52,7 @@ public abstract class SieciBase extends GesutBaseEntity{
 
         Map<String, String> mapa = shp.extractGNAMEList();
         if(mapa.containsKey(GNAME.MATERIAl.getLabel())){
-            this.material = mapa.get(GNAME.MATERIAl.getLabel());
+            this.materialDescription = mapa.get(GNAME.MATERIAl.getLabel());
         }
         if(mapa.containsKey(GNAME.PRZEBIEG.getLabel())){
             this.przebieg = mapa.get(GNAME.PRZEBIEG.getLabel());

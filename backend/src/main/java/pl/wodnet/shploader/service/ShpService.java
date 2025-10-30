@@ -12,6 +12,7 @@ import pl.wodnet.shploader.provider.ShpEntityProvider;
 import pl.wodnet.shploader.repository.ShpRepository;
 import javax.persistence.EntityManager;
 import org.springframework.transaction.annotation.Transactional;
+import pl.wodnet.shploader.slownik.SlownikResolver;
 
 @Service
 @Transactional
@@ -19,6 +20,9 @@ public class ShpService extends AbstractShpService<ShpEntity> {
 
     @Autowired
     ShpRepository shpRepository;
+
+    @Autowired
+    SlownikResolver  slownikResolver;
 
     protected ShpService(ShpEntityProvider entityProvider) {
         super(entityProvider);
@@ -32,6 +36,7 @@ public class ShpService extends AbstractShpService<ShpEntity> {
             em.persist(wodArmatura);
         }else if(shpEntity.getTableName().contains(Constants.WOD_SIECI)){
             WodSieciEntity wodSieci = new WodSieciEntity(shpEntity);
+            slownikResolver.update(wodSieci);
             em.persist(wodSieci);
         }else if(shpEntity.getTableName().contains(Constants.WOD_OBIEKTY)) {
             WodObiektyEntity wodObiekty = new WodObiektyEntity(shpEntity);
@@ -47,6 +52,7 @@ public class ShpService extends AbstractShpService<ShpEntity> {
             }
         }else if(shpEntity.getTableName().contains(Constants.KAN_SIECI)){
             KanSieciEntity kanSieci = new KanSieciEntity(shpEntity);
+            slownikResolver.update(kanSieci);
             em.persist(kanSieci);
         }else if(shpEntity.getTableName().contains(Constants.KAN_OBIEKTY)) {
             KanObiektyEntity kanObiekty = new KanObiektyEntity(shpEntity);
@@ -62,6 +68,7 @@ public class ShpService extends AbstractShpService<ShpEntity> {
             em.persist(engObiekty);
         }else if(shpEntity.getTableName().contains(Constants.GAZ_SIECI)){
             GazSieciEntity gazSieci = new GazSieciEntity(shpEntity);
+            slownikResolver.update(gazSieci);
             em.persist(gazSieci);
         }else if(shpEntity.getTableName().contains(Constants.GAZ_ARMATURA)) {
             GazArmaturaEntity gazArmatura = new GazArmaturaEntity(shpEntity);
@@ -71,6 +78,7 @@ public class ShpService extends AbstractShpService<ShpEntity> {
             em.persist(gazObiekty);
         }else if(shpEntity.getTableName().contains(Constants.TEL_SIECI)) {
             TelSieciEntity telSieci = new TelSieciEntity(shpEntity);
+            slownikResolver.update(telSieci);
             em.persist(telSieci);
         }else if(shpEntity.getTableName().contains(Constants.TEL_ARMATURA)) {
             TelArmaturaEntity telArmatura = new TelArmaturaEntity(shpEntity);
@@ -89,6 +97,7 @@ public class ShpService extends AbstractShpService<ShpEntity> {
             em.persist(coArmaturaEntity);
         }else if(shpEntity.getTableName().contains(Constants.CO_SIECI)) {
             CoSieciEntity coSieciEntity = new CoSieciEntity(shpEntity);
+            slownikResolver.update(coSieciEntity);
             em.persist(coSieciEntity);
         }else if(shpEntity.getTableName().contains(Constants.CO_OBIEKTY)) {
             CoObiektyEntity coObiektyEntity = new CoObiektyEntity(shpEntity);
@@ -98,15 +107,23 @@ public class ShpService extends AbstractShpService<ShpEntity> {
             em.persist(spcArmaturaEntity);
         }else if(shpEntity.getTableName().contains(Constants.SPC_SIECI)) {
             SpcSieciEntity spcSieciEntity = new SpcSieciEntity(shpEntity);
+            slownikResolver.update(spcSieciEntity);
             em.persist(spcSieciEntity);
         }else if(shpEntity.getTableName().contains(Constants.SPC_OBIEKTY)){
             SpcObiektyEntity spcObiektyEntity = new SpcObiektyEntity(shpEntity);
             em.persist(spcObiektyEntity);
         } else if (shpEntity.getTableName().contains(Constants.INNE_ARMATURA)) {
             InneArmaturaEntity entity = new InneArmaturaEntity(shpEntity);
-            em.persist(entity);
+            if(entity.hasValidGeom(shpEntity)){
+                em.persist(entity);
+            } else {
+                String message = String.format("Niezgodnosc geometrii obiektu plik: %s, kod: %s %s %s", shpEntity.getPlik(), shpEntity.getKod(), shpEntity.getTableName(), shpEntity.getGeom().getGeometryType());
+                LOGGER.warn(message);
+                throw new GeometryMismatchException(message);
+            }
         } else if (shpEntity.getTableName().contains(Constants.INNE_SIECI)) {
             InneSieciEntity entity = new InneSieciEntity(shpEntity);
+            slownikResolver.update(entity);
             if(entity.hasValidGeom(shpEntity)){
                 em.persist(entity);
             } else {

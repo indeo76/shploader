@@ -27,6 +27,7 @@ export class ShpImporterComponent extends AbstractShpComponent<ImportResult> imp
 
   private pollingIntervalMs = this.defaultIntervalMs;
   private statusSubscription!: Subscription;
+  private isZablokowany = false;
 
   constructor(private service: ShpImportService) {
     super();
@@ -48,6 +49,7 @@ export class ShpImporterComponent extends AbstractShpComponent<ImportResult> imp
           tap(status => {
             this.statusResponse = status;
             if (status.status === 'FREE') {
+              this.isZablokowany = false;
               this.pollingIntervalMs = this.slowIntervalMs;
             } else {
               this.pollingIntervalMs = this.fastIntervalMs;
@@ -59,6 +61,7 @@ export class ShpImporterComponent extends AbstractShpComponent<ImportResult> imp
   }
 
   private onImportClick() {
+    this.isZablokowany = true;
     this.pollingIntervalMs = this.fastIntervalMs;
   }
 
@@ -87,7 +90,9 @@ export class ShpImporterComponent extends AbstractShpComponent<ImportResult> imp
   }
 
   isFree(): boolean {
-    if(this.statusResponse && this.statusResponse.status === 'FREE'){
+    if(this.isZablokowany){
+      return false;
+    } else if(this.statusResponse && this.statusResponse.status === 'FREE'){
       return true;
     } else {
       return false;
